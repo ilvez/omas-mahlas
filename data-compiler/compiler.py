@@ -1,28 +1,60 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 import csv, json
 from datetime import datetime
 
+class StoryData:
+	"""..."""
+	d = []
+	
+	def __init__(self, elems):
+		''' 
+		1. Siin peaks võtma elemsitest järjest elemente;
+		siis filtreerima teised sama id ja ajaga (minutitäpsus) elemendid;
+		saadud elementide arvu jagama 60 ja saame sekundid
+		muudame aegu ja lisame sageduse
+		paneme uude listi.
+		elemsist eemaldame vastavad elemendid ja algusesse, kuni elems tühi
+		Saadud listis on elemendid sekunditäpsusega.
+		'''
+		pass
+
 class StoryElement:
-	'StoryElement corresponds to one row in input CSV'
-
-	def format_time(self, time):
-		if (len(time) == 4):
-			time = '0' + time
-		return time
-
-	def fix_punctuation(self, datetime):
-		return datetime.replace(".", ":")
+	'''StoryElement corresponds to one row in input CSV'''
+	time = None
+	id = None
+	name = None
+	light = None
+	action = None
+	data = None
+	screenshot = None
+	
 	def __init__(self, row):
 		raw_name = row[0]
-		raw_datetime = self.fix_punctuation(row[1] + "-" + self.format_time(row[2]))
-		if(raw_name != 'nimi'):
+		raw_datetime = self.fix(row[1] + "-" + self.format_time(row[2]))
+		if (raw_name != 'nimi'): #toores
 			self.name = raw_name
 			self.time = datetime.strptime(raw_datetime, '%d:%m:%Y-%H:%M')
 			self.light = row[3]
 			self.action = row[4]
 			self.data = row[5]
 			self.screenshot = row[6]
-	def __str__(self):
-		return str(self.time) + " - " + self.name
+			self.id = self.give_id()
+
+	def format_time(self, time):
+		if (len(time) == 4): #deeply sophisticated
+			time = '0' + time
+		return time
+
+	def fix(self, datetime):
+		return datetime.replace('.', ':')
+
+	def give_id(self):
+		return self.name.upper().replace(' ', '-')
+
+	def __repr__(self):
+		return self.id + ' - ' + str(self.time) + ' - ' + self.data
 
 def extract_csv(file):
 	data = []
@@ -35,6 +67,7 @@ def extract_csv(file):
 
 def to_json(data):
 	return json.dumps(data, sort_keys=True, indent=2)
-	
-data = extract_csv("../data/data-compiler-test/omas-mullis-input.csv")
-print(data[3])
+
+data = extract_csv('../data/data-compiler-test/omas-mullis-input.csv')
+story = StoryData(data)
+print(list(i for i in data if i.id == 'TOOMAS-PLIIATS' and str(i.time) == '2014-04-10 23:28:00'))
