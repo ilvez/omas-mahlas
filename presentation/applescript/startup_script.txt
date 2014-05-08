@@ -1,0 +1,24 @@
+set screenCount to 5
+set screenWidth to 1920
+set baseURL to "http://localhost"
+
+
+tell application "Google Chrome"
+	activate
+	repeat while window 1 exists
+		close window 1
+		
+	end repeat
+	
+	delay 3
+	
+	repeat with x from 1 to screenCount
+		
+		set w to make new window with properties {bounds:{screenWidth * (x - 1), 500, 500 + screenWidth * (x - 1), 1000}}
+		delay 2
+		tell application "System Events" to keystroke "F" using {command down, shift down}
+		set URL of active tab of w to (baseURL & "/" & "?node=" & (x))
+		
+		
+	end repeat
+end tell

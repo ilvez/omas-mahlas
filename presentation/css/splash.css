@@ -1,0 +1,16 @@
+	#splash{
+		background: #FFFFFF;
+		width: 100px;
+		height: 100px;
+		top:10px;
+		left:10px;
+		text-align: center;
+		z-index: 10;
+		position: absolute;
+	}
+	#splash h1{
+		font-size: 30px;
+	}
+	#splash  h3{
+		font-size: 20px;
+	}
