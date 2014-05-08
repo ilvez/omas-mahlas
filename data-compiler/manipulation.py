@@ -4,6 +4,7 @@
 import csv
 import json
 from datetime import datetime
+from itertools import groupby
 
 
 class StoryData:
@@ -20,17 +21,19 @@ class StoryData:
         elemsist eemaldame vastavad elemendid ja algusesse, kuni elems tühi
         Saadud listis on elemendid sekunditäpsusega.
         '''
+        for key, group in groupby(elems, lambda x: (x.id, x.time)):
+            print((len(list(group)), key))
         pass
 
 
 class StoryElement:
     '''StoryElement corresponds to one row in input CSV'''
-    time = None
     id = None
+    time = None
     name = None
+    data = None
     light = None
     action = None
-    data = None
     screenshot = None
 
     def __init__(self, row):
@@ -54,10 +57,11 @@ class StoryElement:
         return datetime.replace('.', ':')
 
     def give_id(self):
-        return self.name.upper().replace(' ', '-')
+        id = self.name.upper().replace(' ', '-')
+        return id
 
     def __repr__(self):
-        return self.id + ' - ' + str(self.time) + ' - ' + self.data
+        return str(self.id) + ' - ' + str(self.time)
 
 
 def extract_csv(file):
@@ -73,7 +77,9 @@ def extract_csv(file):
 def to_json(data):
     return json.dumps(data, sort_keys=True, indent=2)
 
-data = extract_csv('../data/data-compiler-test/omas-mullis-input.csv')
-story = StoryData(data)
-print(list(i for i in data if i.id == 'TOOMAS-PLIIATS'
-           and str(i.time) == '2014-04-10 23:28:00'))
+
+def compile(file):
+    data = extract_csv(file)
+    story = StoryData(data)
+    print(list(i for i in data if i.id == 'TOOMAS-PLIIATS'
+               and str(i.time) == '2014-04-10 23:28:00'))

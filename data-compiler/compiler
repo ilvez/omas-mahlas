@@ -1,0 +1,21 @@
+#!/usr/bin/python
+# coding: utf-8
+#
+# Data manipulator frontend for Omas Mullis
+#
+# Taavi Ilves, taavi.ilves@gmail.com, 2014
+
+import sys
+import argparse
+sys.path.append('.')
+from manipulation import compile
+
+parser = argparse.ArgumentParser()
+parser.add_argument('path', help='path to input CSV')
+
+if len(sys.argv) == 1:
+    parser.print_help()
+    sys.exit(0)
+
+args = parser.parse_args()
+compile(args.path)
