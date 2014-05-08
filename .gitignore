@@ -54,5 +54,7 @@ docs/_build/
 
 # Omas Mahlas shiznit
 data/
+presentation/data
 omas-mahlas.iml
 *.swp
+
