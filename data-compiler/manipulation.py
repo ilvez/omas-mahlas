@@ -143,7 +143,12 @@ def setup_logging(debug):
     logging.basicConfig(level=lev, format=form)
 
 
-def compile(file, debug):
+def compile(file, debug, json_path):
     setup_logging(debug)
     story = StoryData(extract_csv(file))
-    logging.debug('%s', story.to_json())
+    if json_path == None:
+        logging.info('%s', story.to_json())
+    else:
+        with open(json_path, 'w') as json_file:
+            json_file.write(story.to_json())
+        logging.info("Output written to: %s", json_path)

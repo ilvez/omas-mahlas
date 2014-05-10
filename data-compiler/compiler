@@ -15,10 +15,12 @@ parser.add_argument('path', help='path to input CSV')
 parser.add_argument('-d', '--debug',
                     help='prints debug messages',
                     action='store_true')
+parser.add_argument('-j', '--json',
+                    help='path to output json file, will be overwritten')
 
 if len(sys.argv) == 1:
     parser.print_help()
     sys.exit(0)
 
 args = parser.parse_args()
-compile(args.path, args.debug)
+compile(args.path, args.debug, args.json)
