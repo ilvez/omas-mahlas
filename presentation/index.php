@@ -4,7 +4,7 @@
 	<title>OMAS_MULLIS_<?=$_GET["node"]?>_<?=$conf[$_GET["node"]]["title"];?></title>
 	<link rel="stylesheet" href="css/main.css">
 	<link rel="stylesheet" href="css/splash.css">
-	<script src="js/jquery.js"></script>
+	<script src="js/jquery-2.1.1.min.js"></script>
 	<script src="js/splash.js"></script>
 </head>
 
@@ -15,7 +15,7 @@
 
 <?
 
-include($conf[$_GET["node"]]["title"].'/'.$conf[$_GET["node"]]["title"].'.php');
+include(strtolower($conf[$_GET["node"]]["title"].'/'.$conf[$_GET["node"]]["title"].'.php'));
 
 ?>
 </body>
