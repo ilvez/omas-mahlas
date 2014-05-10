@@ -14,15 +14,6 @@ class StoryData:
     elements = []
 
     def __init__(self, elems):
-        '''
-        1. Siin peaks võtma elemsitest järjest elemente;
-        siis filtreerima teised sama id ja ajaga (minutitäpsus) elemendid;
-        saadud elementide arvu jagama 60 ja saame sekundid
-        muudame aegu ja lisame sageduse
-        paneme uude listi.
-        elemsist eemaldame vastavad elemendid ja algusesse, kuni elems tühi
-        Saadud listis on elemendid sekunditäpsusega.
-        '''
         for key, group in groupby(elems, lambda x: x.idx()):
             elem_list = list(group)
             times_in_min = len(elem_list)
@@ -79,7 +70,12 @@ class StoryElement:
         return datetime.replace('.', ':')
 
     def give_id(self):
-        id = self.name.upper().replace(' ', '-')
+        id = self.name.lower().replace(' ', '')
+        id = id.replace('-', '')
+        id = id.replace('õ', 'o')
+        id = id.replace('ö', 'o')
+        id = id.replace('ä', 'a')
+        id = id.replace('ü', 'u')
         return id
 
     def add_seconds(self, sec):
@@ -110,7 +106,7 @@ class StoryElement:
 
     def idx(self):
         logging.debug("StoryElement: %s, %s", self.name, self.time)
-        id = self.name.upper().replace(' ', '-')
+        id = self.give_id()
         id = id + self.get_time().strftime('-%y%m%d-%H%M%S')
         return id
 
@@ -146,7 +142,7 @@ def setup_logging(debug):
 def compile(file, debug, json_path):
     setup_logging(debug)
     story = StoryData(extract_csv(file))
-    if json_path == None:
+    if json_path is None:
         logging.info('%s', story.to_json())
     else:
         with open(json_path, 'w') as json_file:
