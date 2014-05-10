@@ -4,13 +4,14 @@
 import csv
 import json
 import logging
-from datetime import datetime
+import calendar
+from datetime import datetime, timedelta
 from itertools import groupby
 
 
 class StoryData:
     """..."""
-    d = []
+    elements = []
 
     def __init__(self, elems):
         '''
@@ -23,28 +24,46 @@ class StoryData:
         Saadud listis on elemendid sekunditäpsusega.
         '''
         for key, group in groupby(elems, lambda x: x.idx()):
-            times_in_min = len(list(group))
-            logging.debug("%s, %s", times_in_min, key)
-            for e in list(group):
-                logging.debug('\t%s', e.id)
-        pass
+            elem_list = list(group)
+            times_in_min = len(elem_list)
+            if times_in_min > 59:
+                logging.warn("too many times in min: %s", times_in_min)
+            sec_inc = round(60 / times_in_min) % 60
+            sec_add = 0
+            logging.debug("count: %s, sec: %d - %s",
+                          times_in_min, sec_inc, key)
+            for e in elem_list:
+                e.add_seconds(sec_add)
+                e.rating = times_in_min
+                sec_add += sec_inc
+                logging.debug('Updated %s: rating: %s, time: %s',
+                              e.idx(), e.rating, e.time)
+            self.elements = elems
+
+    def to_json(self):
+        return json.dumps(self, default=lambda o: o.__dict__,
+                          sort_keys=True, indent=4)
 
 
 class StoryElement:
     '''StoryElement corresponds to one row in input CSV'''
     id = None
-    time = None
+    time = None  # We keep time in string to simplify JSON dump
     name = None
     data = None
     light = None
     action = None
     screenshot = None
+    rating = 0
+    global CSV_TIME_FORMAT, INTERNAL_FORMAT
+    CSV_TIME_FORMAT = '%d:%m:%Y-%H:%M'
+    INTERNAL_FORMAT = '%Y-%m-%d %H:%M:%S'
 
     def __init__(self, row):
         raw_name = row[0]
         raw_datetime = self.fix(row[1] + "-" + self.format_time(row[2]))
         self.name = raw_name
-        self.time = datetime.strptime(raw_datetime, '%d:%m:%Y-%H:%M')
+        self.set_time(raw_datetime, CSV_TIME_FORMAT)
         self.light = row[3]
         self.action = row[4]
         self.data = row[5]
@@ -63,9 +82,36 @@ class StoryElement:
         id = self.name.upper().replace(' ', '-')
         return id
 
+    def add_seconds(self, sec):
+        new_time = self.get_time() + timedelta(0, sec)
+        logging.debug("%s, %s", new_time,
+                      str(isinstance(new_time, basestring)))
+        self.set_time(new_time, INTERNAL_FORMAT)
+
+    # Function takes in string
+    def set_time(self, time, fmat):
+        logging.debug("time before: %s (string: %s)", self.time,
+                      str(isinstance(self.time, basestring)))
+        if isinstance(time, basestring):
+            new_time = str(datetime.strptime(time, fmat))
+        elif isinstance(time, datetime):
+            new_time = str(time)
+        else:
+            raise TypeError('time must be string or datetime')
+        self.time = new_time
+        logging.debug("time after : %s (string: %s)", self.time,
+                      str(isinstance(self.time, basestring)))
+
+    def get_time(self):
+        logging.debug("returning time: %s, %s (string: %s)",
+                      self.name, self.time,
+                      str(isinstance(self.time, basestring)))
+        return datetime.strptime(self.time, INTERNAL_FORMAT)
+
     def idx(self):
+        logging.debug("StoryElement: %s, %s", self.name, self.time)
         id = self.name.upper().replace(' ', '-')
-        id = id + self.time.strftime('-%y%m%d-%H%M%S')
+        id = id + self.get_time().strftime('-%y%m%d-%H%M%S')
         return id
 
     def __repr__(self):
@@ -99,7 +145,5 @@ def setup_logging(debug):
 
 def compile(file, debug):
     setup_logging(debug)
-    data = extract_csv(file)
-    story = StoryData(data)
-    logging.debug(list(i for i in data if i.id == 'TOOMAS-PLIIATS'
-                       and str(i.time) == '2014-04-10 23:28:00'))
+    story = StoryData(extract_csv(file))
+    logging.debug('%s', story.to_json())
