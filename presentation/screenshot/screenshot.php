@@ -4,9 +4,6 @@
 
 var TIME_PER_SLIDE = 3;
 var allElements = [];
-function imgPath(elem) {
-    return "/data/screenshots/" + elem.id + "/" + elem.screenshot;
-};
 
 // Returns timestamp of current day start 00.00
 function startOfDay() {
@@ -34,8 +31,9 @@ function position(elements) {
 
 function updateScreenshot() {
     var curPos = position(allElements);
+    var elem = allElements[curPos];
     console.log(curPos);
-    $("#kuvapauk").attr("src", imgPath(allElements[curPos]));
+    $("#kuvapauk").attr("src", elem.screenshot);
 }
 
 $.getJSON("data/omas-mullis.json", function(data) {

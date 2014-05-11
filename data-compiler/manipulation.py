@@ -5,6 +5,8 @@ import csv
 import json
 import logging
 import calendar
+import os
+import re
 from datetime import datetime, timedelta
 from itertools import groupby
 
@@ -51,6 +53,7 @@ class StoryElement:
     INTERNAL_FORMAT = '%Y-%m-%d %H:%M:%S'
 
     def __init__(self, row):
+        # set variables
         raw_name = row[0]
         raw_datetime = self.fix(row[1] + "-" + self.format_time(row[2]))
         self.name = raw_name
@@ -58,13 +61,29 @@ class StoryElement:
         self.light = row[3]
         self.action = row[4]
         self.data = row[5]
-        self.screenshot = row[6]
         self.id = self.give_id()
+        self.screenshot = '/data/screenshots/' + self.id + '/' +self.format_path(row[6])
+
+        # Do some tests
+        shot_abs_path = os.getcwd() + self.screenshot
+        if not self.test_path(shot_abs_path):
+            logging.error('No such file: %s', self.screenshot)
+            self.screenshot = '/data/screenshots/missing.png'
 
     def format_time(self, time):
         if (len(time) == 4):  # deeply sophisticated
             time = '0' + time
         return time
+
+    def test_path(self, path):
+        return os.path.exists(path)
+
+    def format_path(self, path):
+        new_path = path.lower().replace(' ','_')
+        new_path = new_path.replace(':', '_')
+        new_path = new_path.replace('sceenshot', 'screenshot')
+        new_path = re.sub('\s+',' ', new_path)
+        return new_path
 
     def fix(self, datetime):
         return datetime.replace('.', ':')
