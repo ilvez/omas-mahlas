@@ -1,45 +1,25 @@
 <style type="text/css">
+    img.keset {
+        display:        block;
+        margin-left:    auto;
+        margin-right:   auto;
+        max-height:     900px;
+    }
 </style>
 <script>
-
-var TIME_PER_SLIDE = 3;
 var allElements = [];
-
-// Returns timestamp of current day start 00.00
-function startOfDay() {
-    var now = new Date();
-    var start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    return Math.round(start / 1000);
-}
-
-function currentTime() {
-    return Math.round($.now() / 1000);
-}
-
-function fullStoryTime(elements) {
-    return elements.length * TIME_PER_SLIDE;
-}
-
-// Function takes all story elements and using system time
-// and returns current element
-function position(elements) {
-    var secondsToNow = currentTime() - startOfDay();
-    var storyTime = fullStoryTime(elements);
-    var currentPos = secondsToNow % storyTime;
-    return Math.round(currentPos / TIME_PER_SLIDE);
-}
 
 function updateScreenshot() {
     var curPos = position(allElements);
     var elem = allElements[curPos];
-    console.log(curPos);
     $("#kuvapauk").attr("src", elem.screenshot);
 }
 
-$.getJSON("data/omas-mullis.json", function(data) {
+// TODO: this must me moved to omas-mullis.js
+$.getJSON(DATA_JSON, function(data) {
     allElements = data.elements;
     setInterval(updateScreenshot, 1000);
 });
 </script>
 
-<img src="" id="kuvapauk" />
+<img src="" id="kuvapauk" class="keset" />
