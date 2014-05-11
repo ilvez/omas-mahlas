@@ -4,15 +4,14 @@
 import csv
 import json
 import logging
-import calendar
+import time
 import os
 import re
-from datetime import datetime, timedelta
+from datetime import datetime
 from itertools import groupby
 
 
 class StoryData:
-    """..."""
     elements = []
 
     def __init__(self, elems):
@@ -42,7 +41,7 @@ class StoryData:
 class StoryElement:
     '''StoryElement corresponds to one row in input CSV'''
     id = None
-    time = None  # We keep time in string to simplify JSON dump
+    time = None  # time is localtime Unix timestamp
     name = None
     data = None
     light = None
@@ -99,37 +98,41 @@ class StoryElement:
         id = id.replace('ü', 'u')
         return id
 
-    def add_seconds(self, sec):
-        new_time = self.get_time() + timedelta(0, sec)
-        logging.debug("%s, %s", new_time,
-                      str(isinstance(new_time, basestring)))
-        self.set_time(new_time, INTERNAL_FORMAT)
-
-    # Function takes in string
-    def set_time(self, time, fmat):
-        logging.debug("time before: %s (string: %s)", self.time,
-                      str(isinstance(self.time, basestring)))
-        if isinstance(time, basestring):
-            new_time = str(datetime.strptime(time, fmat))
-        elif isinstance(time, datetime):
-            new_time = str(time)
-        else:
-            raise TypeError('time must be string or datetime')
-        self.time = new_time
-        logging.debug("time after : %s (string: %s)", self.time,
-                      str(isinstance(self.time, basestring)))
-
-    def get_time(self):
-        logging.debug("returning time: %s, %s (string: %s)",
-                      self.name, self.time,
-                      str(isinstance(self.time, basestring)))
-        return datetime.strptime(self.time, INTERNAL_FORMAT)
-
     def idx(self):
         logging.debug("StoryElement: %s, %s", self.name, self.time)
-        id = self.give_id()
-        id = id + self.get_time().strftime('-%y%m%d-%H%M%S')
-        return id
+        idx = self.give_id()
+        idx = idx + "-" + str(self.time)
+        return idx
+    
+    def set_timestamp(self, timestamp):
+        self.time = int(round(timestamp))
+        logging.debug("setting time : %s (int: %s)", self.time,
+                      str(isinstance(self.time, int)))
+
+    def add_seconds(self, sec):
+        new_time = self.time + sec
+        logging.debug("%s, %s", new_time,
+                      str(isinstance(new_time, basestring)))
+        self.set_timestamp(new_time)
+
+
+    # Function takes in string
+    def set_time(self, input_time, fmat):
+        logging.debug("time before: %s (string: %s)", self.time,
+                      str(isinstance(self.time, basestring)))
+        if isinstance(input_time, basestring):
+            new_time = datetime.strptime(input_time, fmat)
+        elif isinstance(input_time, datetime):
+            new_time = input_time
+        else:
+            raise TypeError('time must be string or datetime')
+        self.set_timestamp(time.mktime(new_time.timetuple()))
+
+    def get_time(self):
+        logging.debug("returning time: %s, %s (int: %s)",
+                      self.name, self.time,
+                      str(isinstance(self.time, int)))
+        return time.localtime(self.time)
 
     def __repr__(self):
         return str(self.id) + ' - ' + str(self.time)
