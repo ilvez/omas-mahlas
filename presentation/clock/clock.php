@@ -28,7 +28,7 @@ function updateClock() {
 // TODO: this must me moved to omas-mullis.js
 $.getJSON(DATA_JSON, function(data) {
     allElements = data.elements;
-    setInterval(updateClock, 1000);
+    setInterval(updateClock, timerClock);
 });
 
 </script>
