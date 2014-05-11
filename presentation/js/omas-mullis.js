@@ -10,9 +10,26 @@ var timerStreet = timerGlobal;
 
 // Returns timestamp of current day start 00.00
 function startOfDay() {
-    var now = new Date();
+    return startOfDayTimestamp(new Date());
+}
+
+function startOfDayTimestamp(now) {
     var start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    return Math.round(start / 1000);
+    return dateToTimestamp(start);
+}
+
+function midnight(ts) {
+    var d = timestampToDate(ts);
+    d.setHours(23,59,59,999);
+    return dateToTimestamp(d);
+}
+
+function dateToTimestamp(d) {
+    return Math.round(d / 1000);
+}
+
+function timestampToDate(ts) {
+    return new Date(ts * 1000);
 }
 
 function currentTime() {
