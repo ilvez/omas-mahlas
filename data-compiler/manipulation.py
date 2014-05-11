@@ -20,7 +20,8 @@ class StoryData:
             elem_list = list(group)
             times_in_min = len(elem_list)
             if times_in_min > 59:
-                logging.warn("too many times in min: %s", times_in_min)
+                logging.error("too many times in min: %s", times_in_min)
+                raise ValueError()
             sec_inc = round(60 / times_in_min) % 60
             sec_add = 0
             logging.debug("count: %s, sec: %d - %s",
@@ -62,7 +63,8 @@ class StoryElement:
         self.action = row[4]
         self.data = row[5]
         self.id = self.give_id()
-        self.screenshot = '/data/screenshots/' + self.id + '/' +self.format_path(row[6])
+        self.screenshot = '/data/screenshots/' + self.id + '/' \
+                          + self.format_path(row[6])
 
         # Do some tests
         shot_abs_path = os.getcwd() + self.screenshot
@@ -79,10 +81,10 @@ class StoryElement:
         return os.path.exists(path)
 
     def format_path(self, path):
-        new_path = path.lower().replace(' ','_')
+        new_path = path.lower().replace(' ', '_')
         new_path = new_path.replace(':', '_')
         new_path = new_path.replace('sceenshot', 'screenshot')
-        new_path = re.sub('\s+',' ', new_path)
+        new_path = re.sub('\s+', ' ', new_path)
         return new_path
 
     def fix(self, datetime):
