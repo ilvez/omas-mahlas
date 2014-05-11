@@ -22,7 +22,9 @@ var allElements = [];
 
 function updateClock() {
     var elem = allElements[position(allElements)];
-    $("#clock").text(elem.time);
+    var txt = elem.time + "\n" + elem.name.toUpperCase();
+    var obj = $("#clock").text(txt);
+    obj.html(obj.html().replace(/\n/g,'<br/>'));
 }
 
 // TODO: this must me moved to omas-mullis.js
