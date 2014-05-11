@@ -6,6 +6,7 @@
 	<link rel="stylesheet" href="css/splash.css">
 	<script src="js/jquery-2.1.1.min.js"></script>
 	<script src="js/splash.js"></script>
+	<script src="js/date.js"></script>
 	<script src="js/omas-mullis.js"></script>
 </head>
 

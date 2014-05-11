@@ -23,7 +23,7 @@ function fullStoryTime(elements) {
 }
 
 // Function takes all story elements and using system time
-// and returns current element
+// returns current element
 function position(elements) {
     var secondsToNow = currentTime() - startOfDay();
     var currentPos = secondsToNow % fullStoryTime(elements);

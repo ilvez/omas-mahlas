@@ -22,7 +22,9 @@ var allElements = [];
 
 function updateClock() {
     var elem = allElements[position(allElements)];
-    var txt = elem.time + "\n" + elem.name.toUpperCase();
+    var storyDate = new Date(elem.time * 1000);
+    var txt = storyDate.toString("yyyy-MM-dd") + "\n" + 
+        storyDate.toString("HH:mm:ss") +"\n" + elem.name.toUpperCase();
     var obj = $("#clock").text(txt);
     obj.html(obj.html().replace(/\n/g,'<br/>'));
 }
