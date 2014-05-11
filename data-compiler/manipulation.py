@@ -48,9 +48,8 @@ class StoryElement:
     action = None
     screenshot = None
     rating = 0
-    global CSV_TIME_FORMAT, INTERNAL_FORMAT
+    global CSV_TIME_FORMAT
     CSV_TIME_FORMAT = '%d:%m:%Y-%H:%M'
-    INTERNAL_FORMAT = '%Y-%m-%d %H:%M:%S'
 
     def __init__(self, row):
         # set variables

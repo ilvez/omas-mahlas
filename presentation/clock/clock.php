@@ -10,7 +10,7 @@ body {
 }
 
 #clock {
-    margin-top:     200px;
+    margin-top:     100px;
     font-size:      200px;
     color:          yellow;
     text-align:     center;
