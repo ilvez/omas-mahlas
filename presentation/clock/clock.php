@@ -1,5 +1,5 @@
 <style>
-@import url(http://fonts.googleapis.com/css?family=Droid+Serif);
+@import url(http://fonts.googleapis.com/css?family=Droid+Sans);
 
 @font-face {
     font-family:    'Droid Sans';
