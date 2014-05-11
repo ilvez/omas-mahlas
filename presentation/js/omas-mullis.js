@@ -1,5 +1,5 @@
-var TIME_PER_SLIDE = 3;
-var allElements = [];
+var DATA_JSON = "data/omas-mullis.json";
+var TIME_PER_SLIDE = 5;
 
 // Returns timestamp of current day start 00.00
 function startOfDay() {
