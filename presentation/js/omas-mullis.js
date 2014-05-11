@@ -1,11 +1,12 @@
 var DATA_JSON = "data/omas-mullis.json";
 var TIME_PER_SLIDE = 5;
 
-var timerShot = 200;
-var timerMap = 200;
-var timerClock = 200;
-var timerContent = 200;
-var timerStreet = 200
+var timerGlobal = 100;
+var timerShot = timerGlobal;
+var timerMap = timerGlobal;
+var timerClock = timerGlobal;
+var timerContent = timerGlobal;
+var timerStreet = timerGlobal;
 
 // Returns timestamp of current day start 00.00
 function startOfDay() {
