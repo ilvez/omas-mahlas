@@ -6,7 +6,7 @@ require_once '_rrmdir.php';
 if (!isset($_GET['subject'])) {
     die('Puudu GET parameeter "subject"');
 }
-$gpxFile = '../../data/subjects/' . $_GET['subject'] . '/data.gpx';
+$gpxFile = '../../data/subjects/' . $_GET['subject'] . '.gpx';
 if (!file_exists($gpxFile)) {
     die('Ei leia GPX faili: "' . $gpxFile . '"');
 }
@@ -14,10 +14,10 @@ $gpxParsed = gpx_to_json($gpxFile);
 // Test set of sliced data (only 2 coords)
 //$gpxParsed = json_encode(array_slice(json_decode($gpxParsed), 0, 2));
 
+$targetFolder = substr(realpath($gpxFile), 0, -4);
 if (!isset($_GET['offset'])) {
     // Purge existing folder
-    $subjectDir = realpath(dirname($gpxFile)) . '/StreetView';
-    rrmdir($subjectDir); mkdir($subjectDir);
+    rrmdir($targetFolder); mkdir($targetFolder);
     $_GET['offset'] = 1;
 }
 
@@ -45,7 +45,7 @@ if (!isset($_GET['offset'])) {
         }
 
         function nextIteration () {
-            window.location = 'http://timo.dev/StreetView/generator.php?subject=liisalotte&offset=' + (offset+1);
+            window.location = 'http://timo.dev/StreetView/generator.php?subject=<?=$_GET['subject']?>&offset=' + (offset+1);
         }
 
         // Are we done with the recursion?

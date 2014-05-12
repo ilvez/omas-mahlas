@@ -12,6 +12,6 @@ $position  = $_POST['pos'];
 $date      = new DateTime('@' . $_POST['epoch']);
 $dateEpoch = $date->format('Ymd_His');
 $fileName  = sprintf('%s-%s.jpg', $dateEpoch, $position);
-$filePath  = '../../data/subjects/' . $_POST['subject'] . '/StreetView/' . $fileName;
+$filePath  = '../../data/subjects/' . $_POST['subject'] . '/' . $fileName;
 
 base64_to_jpeg($_POST['blob'], $filePath);
