@@ -1,2 +1,22 @@
 # Tahab Python 2.7 
 sudo python setup.py develop
+
+# Pärast käivitamine
+$ timofirmata
+Traceback (most recent call last):
+  File "/usr/local/bin/timofirmata", line 8, in <module>
+    load_entry_point('timofirmata==0.1.0', 'console_scripts', 'timofirmata')()
+  File "/Users/niisamalinnas/omas-mahlas/timofirmata/timofirmata/__init__.py", line 11, in main
+    run(port="/dev/ttyUSB0", baudrate=9600)
+  File "/Users/niisamalinnas/omas-mahlas/timofirmata/timofirmata/timofirmata.py", line 52, in run
+    SerialPort(serial_protocol, port, reactor, baudrate=baudrate)
+  File "/System/Library/Frameworks/Python.framework/Versions/2.7/Extras/lib/python/twisted/internet/_posixserialport.py", line 38, in __init__
+    xonxoff=xonxoff, rtscts=rtscts)
+  File "build/bdist.macosx-10.9-intel/egg/serial/serialutil.py", line 282, in __init__
+  File "build/bdist.macosx-10.9-intel/egg/serial/serialposix.py", line 289, in open
+OSError: [Errno 2] No such file or directory: '/dev/ttyUSB0'
+
+# Vaja on muuta timofirmata/__init__.py failis seade ja baud
+omasmullis:timofirmata niisamalinnas$ sudo vim /Users/niisamalinnas/omas-mahlas/timofirmata/timofirmata/__init__.py
+
+# jne
