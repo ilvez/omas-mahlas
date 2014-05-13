@@ -102,7 +102,7 @@ class StoryElement:
         idx = self.give_id()
         idx = idx + "-" + str(self.time)
         return idx
-    
+
     def set_timestamp(self, timestamp):
         self.time = int(round(timestamp))
         logging.debug("setting time : %s (int: %s)", self.time,
@@ -113,7 +113,6 @@ class StoryElement:
         logging.debug("%s, %s", new_time,
                       str(isinstance(new_time, basestring)))
         self.set_timestamp(new_time)
-
 
     # Function takes in string
     def set_time(self, input_time, fmat):
