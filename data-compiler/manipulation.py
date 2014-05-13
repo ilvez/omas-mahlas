@@ -10,11 +10,15 @@ import re
 from datetime import datetime
 from itertools import groupby
 
+REL_PATH_SCREENSHOTS = '/data/screenshots/'
+REL_PATH_MAPVIDEOS = '/data/mapvideo/'
+REL_PATH_STREETVIDEOS = 'streetvideo/videos/'
+
 
 class StoryData:
     elements = []
 
-    def __init__(self, elems):
+    def __init__(self, elems, mapvid, streetvid):
         for key, group in groupby(elems, lambda x: x.idx()):
             elem_list = list(group)
             times_in_min = len(elem_list)
@@ -31,11 +35,84 @@ class StoryData:
                 sec_add += sec_inc
                 logging.debug('Updated %s: rating: %s, time: %s',
                               e.idx(), e.rating, e.time)
-            self.elements = elems
+        self.elements = elems
+
+        # Now we parse map and streetview video files
+        self.parse_map_video(mapvid)
+        self.parse_street_video(streetvid)
 
     def to_json(self):
         return json.dumps(self, default=lambda o: o.__dict__,
                           sort_keys=True, indent=4)
+
+    def read_regular_file(self, filepath):
+        lines = []
+        with open(filepath, 'r') as f:
+            for line in f:
+                lines.append(line)
+        return lines
+
+    def dir_file_to_list(self, dir_or_file):
+        lines = []
+        if os.path.isdir(dir_or_file):
+            # Tagastame relational pathid
+            pass
+        elif os.path.isfile(dir_or_file):
+            lines = self.read_regular_file(dir_or_file)
+        else:
+            logging.error("File missing: %s", dir_or_file)
+            raise ValueError("File missing...")
+        logging.info("Number of files: %s", len(lines))
+        return lines
+
+    # Finds first timestamp with matching id, we need date
+    def find_date(self, id):
+        return next(elem for elem in self.elements if elem.id == id).time
+
+    def combine(self, d, str):
+        timeparts = str.split('-')
+        return datetime(d.year, d.month, d.day, int(timeparts[0]),
+                        int(timeparts[1]), int(timeparts[2]))
+
+    def parse_map_video(self, vids):
+        logging.info("Parsing map videos: %s", vids)
+        file_list = self.dir_file_to_list(vids)
+        for name in file_list:
+            parts = MapFileName(name)
+            day_ts = datetime.fromtimestamp(self.find_date(parts.id))
+            begin_ts = d_to_ts(self.combine(day_ts, parts.begin))
+            end_ts = d_to_ts(self.combine(day_ts, parts.end))
+            logging.debug("date %s: %s -> %s", parts.id, begin_ts, end_ts)
+        pass
+
+    def parse_street_video(self, vids):
+        logging.info("Parsing streetview videos: %s", vids)
+        file_list = self.dir_file_to_list(vids)
+        pass
+
+
+class MapFileName:
+    id = None
+    begin = None
+    end = None
+    name = None
+    relpath = None
+
+    def __init__(self, filename):
+        parts = filename.split('_')
+        self.id = self.remove_dash(parts[0])
+        self.begin = parts[1]
+        self.end = parts[2]
+        self.name = filename.replace('\n', '')
+        self.relpath = REL_PATH_MAPVIDEOS + self.name
+        pass
+
+    def __repr__(self):
+        return self.id + ': ' + str(self.begin) + '->' + str(self.end) +\
+            '\n\t\tname:' + self.name + '\n\t\tpath:' + self.relpath
+
+    def remove_dash(self, s):
+        return s.replace('-', '')
 
 
 class StoryElement:
@@ -61,14 +138,14 @@ class StoryElement:
         self.action = row[4]
         self.data = row[5]
         self.id = self.give_id()
-        self.screenshot = '/data/screenshots/' + self.id + '/' \
-                          + self.format_path(row[6])
+        self.screenshot = REL_PATH_SCREENSHOTS + self.id + '/' +\
+            + self.format_path(row[6])
 
         # Do some tests
         shot_abs_path = os.getcwd() + self.screenshot
         if not self.test_path(shot_abs_path):
             logging.error('No such file: %s', self.screenshot)
-            self.screenshot = '/data/screenshots/missing.png'
+            self.screenshot = REL_PATH_SCREENSHOTS + 'missing.png'
 
     def format_time(self, time):
         if (len(time) == 4):  # deeply sophisticated
@@ -161,9 +238,14 @@ def setup_logging(debug):
     logging.basicConfig(level=lev, format=form)
 
 
-def compile(file, debug, json_path):
+# Date to local timestamp
+def d_to_ts(d):
+    return int(round(time.mktime(d.timetuple())))
+
+
+def compile(file, debug, json_path, mapvid, streetvid):
     setup_logging(debug)
-    story = StoryData(extract_csv(file))
+    story = StoryData(extract_csv(file), mapvid, streetvid)
     if json_path is None:
         logging.info('%s', story.to_json())
     else:
