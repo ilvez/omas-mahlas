@@ -1,0 +1,2 @@
+# Tahab Python 2.7 
+sudo python setup.py develop
