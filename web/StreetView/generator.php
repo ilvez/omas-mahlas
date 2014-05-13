@@ -45,7 +45,7 @@ if (!isset($_GET['offset'])) {
         }
 
         function nextIteration () {
-            window.location = 'http://timo.dev/StreetView/generator.php?subject=<?=$_GET['subject']?>&offset=' + (offset+1);
+            window.location = 'http://omasmullis.local//StreetView/generator.php?subject=<?=$_GET['subject']?>&offset=' + (offset+1);
         }
 
         // Are we done with the recursion?

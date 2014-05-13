@@ -25,7 +25,7 @@ if (isset($_GET['next']) && $_GET['next']) {
     }
     $nextGpx = current($allGpx);
     $nextGpx = substr(basename($nextGpx), 0, -4);
-    header('Location: http://timo.dev/StreetView/generator_loop.php?subject=' . $nextGpx);
+    header('Location: http://omasmullis.local/StreetView/generator_loop.php?subject=' . $nextGpx);
     die();
 }
 
@@ -59,14 +59,14 @@ if (!isset($_GET['offset'])) {
             }
 
             function nextIteration () {
-                window.location = 'http://timo.dev/StreetView/generator_loop.php?subject=<?=$_GET['subject']?>&offset=' + (offset+1);
+                window.location = 'http://omasmullis.local/StreetView/generator_loop.php?subject=<?=$_GET['subject']?>&offset=' + (offset+1);
             }
 
             // Are we done with the recursion?
             if (offset > jsonCoords.length - 1) {
                 showHyperlapseFeedback('All done, YAY');
                 $('#feedback').val('Finished at ' + getCurrentTime() + "\n" + $('#feedback').val());
-                window.location = 'http://timo.dev/StreetView/generator_loop.php?subject=<?=$_GET['subject']?>&next=1';
+                window.location = 'http://omasmullis.local/StreetView/generator_loop.php?subject=<?=$_GET['subject']?>&next=1';
                 return;
             }
 
@@ -166,12 +166,14 @@ if (!isset($_GET['offset'])) {
             };
 
             /* Start route generation */
+            
+
             showHyperlapseFeedback("Generating route...");
             directions_renderer.setDirections({routes: []});
             directions_service.route({
                     origin:      start_point,
                     destination: end_point,
-                    travelMode:  google.maps.DirectionsTravelMode[start_coords.speed > 5 ? 'DRIVING' : 'WALKING']
+                    travelMode:  google.maps.DirectionsTravelMode['WALKING'] /// travelMode:  google.maps.DirectionsTravelMode[start_coords.speed > 5 ? 'DRIVING' : 'WALKING']
                 },
                 function (response, status) {
                     if (status == google.maps.DirectionsStatus.OK) {
