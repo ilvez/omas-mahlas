@@ -1,5 +1,14 @@
-<style>
+<div id="content"></div>
+<div id="content_gradient"><img src="/content/content_gradient.png"></div>
 
+<ul id="activities">
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+</ul>
+
+<style>
 body {
     background: #000000;
 }
@@ -18,28 +27,22 @@ body {
 <script>
 
 var allElements = [];
+var contentElement = 1;
 
 function updateContent() {
     var elem = allElements[position(allElements)];
-    // var txt = " >> " + elem.action + " - " + elem.light + " - " + elem.data;
-    // $("#content").text(txt);
-    show_activity(elem.light, elem.action, elem.data, "aahannagrete1.jpg", "140407_12.wav");
+    if (elem != contentElement) {
+        contentElement = elem;
+        show_activity(elem.light, elem.action, elem.data, "aahannagrete1.jpg", "140407_12.wav");
+    }
 }
 
-// TODO: this must me moved to omas-mullis.js
-$.getJSON(DATA_JSON, function(data) {
-    allElements = data.elements;
-    setInterval(updateContent, timerContent);
-});
+function displayData() {
+    $.getJSON(DATA_JSON, function(data) {
+        allElements = data.elements;
+        setInterval(updateContent, timerContent);
+    });
+}
 
+displayData();
 </script>
-
-<div id="content"></div>
-<div id="content_gradient"><img src="/content/content_gradient.png"></div>
-
-<ul id="activities">
-    <li></li>
-    <li></li>
-    <li></li>
-    <li></li>
-</ul>
