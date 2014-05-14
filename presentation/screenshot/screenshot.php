@@ -18,7 +18,9 @@ function updateScreenshot() {
 // TODO: this must me moved to omas-mullis.js
 $.getJSON(DATA_JSON, function(data) {
     allElements = data.elements;
-    setInterval(updateScreenshot, timerShot);
+    window.setTimeout(function() {
+        setInterval(updateScreenshot, timerShot);
+    }, STARTUP_TIME);
 });
 </script>
 

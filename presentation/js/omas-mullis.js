@@ -1,6 +1,8 @@
 var DATA_JSON = "data/omas-mullis.json";
 var TIME_PER_SLIDE = 5;
 
+var STARTUP_TIME = 20000;
+
 var timerGlobal = 100;
 var timerShot = timerGlobal;
 var timerMap = 1000;
