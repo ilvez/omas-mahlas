@@ -65,16 +65,21 @@ class StoryData:
         logging.info("Number of files: %s", len(lines))
         return lines
 
-    def add_map_video(self, parts, begin_end):
-#        for key, group in groupby(self.elements, lambda x: x.time >= begin_end[1] and x.time <=begin_end[2]):
-        pass
+    def add_map_video(self, parts):
+        logging.debug("Searching elements for video: %s (%s -> %s)", parts.id, 
+                      ts_to_str(parts.begin_ts), ts_to_str(parts.end_ts))
+        for e in filter(lambda x: x.time >= parts.begin_ts and
+                                  x.time <= parts.end_ts and
+                                  x.id == parts.id, self.elements):
+            logging.debug("\tFound: %s - %s", e.id, ts_to_str(e.time))
+            e.mapvideo = parts.relpath
 
     def parse_map_video(self, vids):
         logging.info("Parsing map videos: %s", vids)
         file_list = self.dir_file_to_list(vids)
         for name in file_list:
             parts = MapFileName(name, self.elements)
-#            self.add_map_video(parts, begin_end)
+            self.add_map_video(parts)
         pass
 
     def parse_street_video(self, vids):
@@ -106,7 +111,8 @@ class MapFileName:
         day_ts = datetime.fromtimestamp(self.find_date(elements))
         self.begin_ts = d_to_ts(self.combine(day_ts, self.begin))
         self.end_ts = d_to_ts(self.combine(day_ts, self.end))
-        logging.debug("%s: %s -> %s", self.id, self.begin_ts, self.end_ts)
+        logging.debug("%s: %s (%s) -> %s (%s)", self.id, self.begin_ts, 
+                      ts_to_str(self.begin_ts), self.end_ts, ts_to_str(self.end_ts))
 
     # Finds first timestamp with matching id, we need date
     def find_date(self, elements):
@@ -255,6 +261,8 @@ def setup_logging(debug):
 def d_to_ts(d):
     return int(round(time.mktime(d.timetuple())))
 
+def ts_to_str(ts):
+    return datetime.fromtimestamp(ts)
 
 def compile(file, debug, json_path, mapvid, streetvid):
     setup_logging(debug)
