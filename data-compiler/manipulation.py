@@ -65,24 +65,21 @@ class StoryData:
         logging.info("Number of files: %s", len(lines))
         return lines
 
-    # Finds first timestamp with matching id, we need date
-    def find_date(self, id):
-        return next(elem for elem in self.elements if elem.id == id).time
-
-    def combine(self, d, str):
-        timeparts = str.split('-')
-        return datetime(d.year, d.month, d.day, int(timeparts[0]),
-                        int(timeparts[1]), int(timeparts[2]))
+    def add_map_video(self, parts):
+        logging.debug("Searching elements for video: %s (%s -> %s)", parts.id, 
+                      ts_to_str(parts.begin_ts), ts_to_str(parts.end_ts))
+        for e in filter(lambda x: x.time >= parts.begin_ts and
+                                  x.time <= parts.end_ts and
+                                  x.id == parts.id, self.elements):
+            logging.debug("\tFound: %s - %s", e.id, ts_to_str(e.time))
+            e.mapvideo = parts.relpath
 
     def parse_map_video(self, vids):
         logging.info("Parsing map videos: %s", vids)
         file_list = self.dir_file_to_list(vids)
         for name in file_list:
-            parts = MapFileName(name)
-            day_ts = datetime.fromtimestamp(self.find_date(parts.id))
-            begin_ts = d_to_ts(self.combine(day_ts, parts.begin))
-            end_ts = d_to_ts(self.combine(day_ts, parts.end))
-            logging.debug("date %s: %s -> %s", parts.id, begin_ts, end_ts)
+            parts = MapFileName(name, self.elements)
+            self.add_map_video(parts)
         pass
 
     def parse_street_video(self, vids):
@@ -97,15 +94,34 @@ class MapFileName:
     end = None
     name = None
     relpath = None
+    begin_ts = None
+    end_ts = None
 
-    def __init__(self, filename):
+    def __init__(self, filename, elements):
         parts = filename.split('_')
         self.id = self.remove_dash(parts[0])
         self.begin = parts[1]
         self.end = parts[2]
         self.name = filename.replace('\n', '')
         self.relpath = REL_PATH_MAPVIDEOS + self.name
+        self.begin_end_time(elements)
         pass
+
+    def begin_end_time(self, elements):
+        day_ts = datetime.fromtimestamp(self.find_date(elements))
+        self.begin_ts = d_to_ts(self.combine(day_ts, self.begin))
+        self.end_ts = d_to_ts(self.combine(day_ts, self.end))
+        logging.debug("%s: %s (%s) -> %s (%s)", self.id, self.begin_ts, 
+                      ts_to_str(self.begin_ts), self.end_ts, ts_to_str(self.end_ts))
+
+    # Finds first timestamp with matching id, we need date
+    def find_date(self, elements):
+        return next(elem for elem in elements if elem.id == self.id).time
+
+    def combine(self, d, str):
+        timeparts = str.split('-')
+        return datetime(d.year, d.month, d.day, int(timeparts[0]),
+                        int(timeparts[1]), int(timeparts[2]))
 
     def __repr__(self):
         return self.id + ': ' + str(self.begin) + '->' + str(self.end) +\
@@ -125,6 +141,9 @@ class StoryElement:
     action = None
     screenshot = None
     rating = 0
+    mapvideo = None
+    streetvideo = None
+
     global CSV_TIME_FORMAT
     CSV_TIME_FORMAT = '%d:%m:%Y-%H:%M'
 
@@ -138,7 +157,7 @@ class StoryElement:
         self.action = row[4]
         self.data = row[5]
         self.id = self.give_id()
-        self.screenshot = REL_PATH_SCREENSHOTS + self.id + '/' +\
+        self.screenshot = REL_PATH_SCREENSHOTS + self.id + '/'\
             + self.format_path(row[6])
 
         # Do some tests
@@ -158,7 +177,7 @@ class StoryElement:
     def format_path(self, path):
         new_path = path.lower().replace(' ', '_')
         new_path = new_path.replace(':', '_')
-        new_path = new_path.replace('sceenshot', 'screenshot')
+        new_path = new_path.replace('sceenshot', 'screenshot') ## Väga vajalik
         new_path = re.sub('\s+', ' ', new_path)
         return new_path
 
@@ -242,6 +261,8 @@ def setup_logging(debug):
 def d_to_ts(d):
     return int(round(time.mktime(d.timetuple())))
 
+def ts_to_str(ts):
+    return datetime.fromtimestamp(ts)
 
 def compile(file, debug, json_path, mapvid, streetvid):
     setup_logging(debug)
