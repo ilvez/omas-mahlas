@@ -1,0 +1,66 @@
+
+body{
+	background-color: #000000;
+	margin:0;
+	padding:0;
+	font-family: helvetica;
+}
+
+#content_gradient{
+	position: absolute;
+	top:0;
+	left:0;
+	z-index: 10;
+	opacity: 0.8;
+}
+
+#activities {
+	width: 1920px;
+	position: absolute;
+	left: 0;
+	top:0;
+	-webkit-padding-start: 0;
+	padding: 0;
+	margin:0;
+}
+
+
+#activities li {
+	color: #FFFFFF;
+	overflow: hidden;
+	height: 330px;
+	padding: 10px;
+	list-style: none;
+	font-size: 24px;
+	text-align: left;
+	border-bottom: 0px dotted #FFFFFF;
+	width: 100%;
+}
+
+.lamp{
+	width: 250px;
+	height:330px;
+	float: left;	
+	text-align: center;
+	padding-top: 50px;
+}
+
+.message{
+	height:330px;
+	width:1300px;
+	float: left;	
+}
+
+.photo{
+	position: relative;
+	height:330px;
+	width: 330px;
+	float: left;	
+}
+
+.ring_cut{
+	position: absolute;
+	top:0;
+	left:0;
+	z-index: 10;
+}
