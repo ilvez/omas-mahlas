@@ -72,6 +72,8 @@ class StoryData:
                                   x.id == parts.id, self.elements):
             logging.debug("\tFound: %s - %s", e.id, ts_to_str(e.time))
             e.mapvideo = parts.relpath
+            e.mapvideo_begin = parts.begin_ts
+            e.mapvideo_end = parts.end_ts
 
     def parse_map_video(self, vids):
         logging.info("Parsing map videos: %s", vids)
@@ -141,6 +143,8 @@ class StoryElement:
     screenshot = None
     rating = 0
     mapvideo = None
+    mapvideo_begin = None
+    mapvideo_end = None
     streetvideo = None
 
     global CSV_TIME_FORMAT
