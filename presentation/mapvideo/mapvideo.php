@@ -1,50 +1,64 @@
 <style type="text/css">
-
-#speed{
-	z-index: 10;
-	position: absolute;
-	right:10px;
-	top:10px;
-	background-color: #FFFFFF;
-
-}
-
+    #speed {
+        z-index: 10;
+        position: absolute;
+        right:10px;
+        top:10px;
+        background-color: #FFFFFF;
+    }
 </style>
 
 <div id="speed"></div>
 
-<video id="video" width="1919" height="1080">
-  <source src="data/mapvideo/anu-kuri_07-30-01_07-50-00_59.402774,24.818489_59.418062,24.720678.gpx.ogg" type="video/ogg">
-  Your browser does not support HTML5 video.
+<video id="mapvidjo" width="1919" height="1080">
+    <source id="mapvidjo-src" src="" type="video/ogg">
 </video>
 
-
-
-
 <script>
-setTimeout(function () {
+var allElements = [];
+var currentElem = 0;
+var currentVideo = "";
+var currentBegin = 0;
+var currentEnd = 0;
 
-document.getElementById("video").play();
+function playNewVideo(elem) {
+    currentVideo = elem.mapvideo;
+    $("#mapvidjo-src").attr("src", currentVideo);
+    $("#mapvidjo")[0].load();
+    $("#mapvidjo")[0].play();
+}
 
-},10000)
+function updateVideo() {
+    var curPos = position(allElements);
+    var elem = allElements[curPos];
 
-myVid=document.getElementById("video");
+    if (elem.mapvideo != null 
+            && elem.mapvideo != currentVideo) {
+        playNewVideo(elem);
+        currentBegin = elem.mapvideo_begin;
+        currentEnd = elem.mapvideo_end;
+    }
 
-	for ( i = 0; i <= 3000; i++) {
- 		
- 		 doSetTimeout(i);
+    if (elem != currentElem) {
+        // TODO
+    }
+}
 
-	}
+$.getJSON(DATA_JSON, function(data) {
+    allElements = data.elements;
+    setInterval(updateVideo, timerMap);
+});
+
+
+/** ONLY FOR SPEED EXAMPLE
 
 function doSetTimeout(i) {
-  setTimeout(function() { 
-
-  		//document.getElementById("video").playbackRate=i*0.01;
-		speed = document.getElementById("video").playbackRate;
-		$("#speed").html(speed);
-
-
+    setTimeout(function() { 
+        //document.getElementById("video").playbackRate=i*0.01;
+        speed = document.getElementById("video").playbackRate;
+        $("#speed").html(speed);
    }, i*10+10000);
 }
+ */
 
 </script> 

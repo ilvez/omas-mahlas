@@ -1,20 +1,35 @@
 <style>
-@import url(http://fonts.googleapis.com/css?family=Droid+Sans);
 
-@font-face {
-    font-family:    'Droid Sans';
+
+@font-face
+{
+    font-family: DigitalDismay;
+    src: url('/data/fonts/Digital Dismay.otf');
 }
+
 
 body {
     background:     #000000;
 }
 
-#clock {
-    margin-top:     100px;
-    font-size:      200px;
-    color:          yellow;
-    text-align:     center;
-    font-family:    pixel_supermarket;
+#time {
+    margin-top:  100px;
+    font-size:   400px;
+    line-height: 300px;
+    color:       yellow;
+    text-align:  center;
+    font-family: DigitalDismay;
+}
+
+#name{
+
+    font-family: "helvetica neue", helvetica;
+    font-weight: 300;
+    color: #999999;
+    text-align: center;
+    font-size: 100px;
+    margin-top: 150px;
+
 }
 </style>
 
@@ -30,11 +45,8 @@ function calculateStep(current, next) {
 }
 
 function updateHtml(elem, storyDate) {
- var txt = storyDate.toString("yyyy-MM-dd") + "\n" +
-        storyDate.toString("HH:mm:ss") +"\n" + elem.name.toUpperCase();
-    var obj = $("#clock").text(txt);
-    obj.html(obj.html().replace(/\n/g,'<br/>'));
-
+    var txt =  "<div id='time'>" + storyDate.toString("HH:mm:ss") + "</div>\n<div id='name'>" + elem.name.toUpperCase() + "<br/>"+ storyDate.toString("dd.MM.yyyy") +"</div>";
+    $("#clock").html(txt);
 }
 
 function getNextTime(elem, nextPos) {

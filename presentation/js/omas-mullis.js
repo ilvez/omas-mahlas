@@ -3,7 +3,7 @@ var TIME_PER_SLIDE = 5;
 
 var timerGlobal = 100;
 var timerShot = timerGlobal;
-var timerMap = timerGlobal;
+var timerMap = 1000;
 var timerClock = 30;
 var timerContent = timerGlobal;
 var timerStreet = timerGlobal;
