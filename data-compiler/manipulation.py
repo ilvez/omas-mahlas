@@ -55,8 +55,7 @@ class StoryData:
     def dir_file_to_list(self, dir_or_file):
         lines = []
         if os.path.isdir(dir_or_file):
-            # Tagastame relational pathid
-            pass
+            lines = os.listdir(dir_or_file)
         elif os.path.isfile(dir_or_file):
             lines = self.read_regular_file(dir_or_file)
         else:
