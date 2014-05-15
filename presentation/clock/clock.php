@@ -40,26 +40,9 @@ var originalTime = 0;
 var currentTimestamp = 0;
 var timeStep = 0;
 
-function calculateStep(current, next) {
-    return (next - current) / (TIME_PER_SLIDE * (1000 / timerClock));
-}
-
 function updateHtml(elem, storyDate) {
     var txt =  "<div id='time'>" + storyDate.toString("HH:mm:ss") + "</div>\n<div id='name'>" + elem.name.toUpperCase() + "<br/>"+ storyDate.toString("dd.MM.yyyy") +"</div>";
     $("#clock").html(txt);
-}
-
-function getNextTime(elem, nextPos) {
-    // If next element is from new character
-    // then lets count down to midnight
-    var nextTime;
-    if (nextPos >= allElements.length
-            || allElements[nextPos].id != elem.id) {
-        nextTime = midnight(currentTimestamp);
-    } else {
-        nextTime = allElements[nextPos].time;
-    }
-    return nextTime;
 }
 
 // Currently quite expensive, triggered too many times & updates nothing
@@ -71,7 +54,7 @@ function updateClock() {
     if (originalTime != elem.time) {
         originalTime = elem.time;
         currentTimestamp = originalTime;
-        timeStep = calculateStep(originalTime, getNextTime(elem, curPos + 1));
+        timeStep = calculateStep(originalTime, getNextTime(elem, getNextElem(allElements)), timerClock);
     } else {
         currentTimestamp = currentTimestamp + timeStep;
     };

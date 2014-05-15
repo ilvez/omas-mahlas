@@ -69,3 +69,19 @@ function getCurrentElem(elements) {
 function getNextElem(elements) {
     return elements[nextPosition(elements)];
 }
+
+function getNextTime(curElem, nextElem) {
+    // If next element is from new character
+    // then lets count down to midnight
+    var nextTime;
+    if (nextElem.id != curElem.id) {
+        nextTime = midnight(currentTimestamp);
+    } else {
+        nextTime = nextElem.time;
+    }
+    return nextTime;
+}
+
+function calculateStep(current, next, timer) {
+    return (next - current) / (TIME_PER_SLIDE * (1000 / timer));
+}

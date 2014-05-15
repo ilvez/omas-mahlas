@@ -57,4 +57,4 @@ data/
 presentation/data
 omas-mahlas.iml
 *.swp
-
+.DS_Store
