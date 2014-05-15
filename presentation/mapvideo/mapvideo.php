@@ -23,7 +23,7 @@ var currentElem = 0;
 var currentVideo = "";
 var currentBegin = 0;
 var currentEnd = 0;
-var currentLength = 0;
+var currentVideoLength = 0;
 var currentSpeed = -1;
 
 function playNewVideo(elem) {
@@ -37,13 +37,18 @@ function playNewVideo(elem) {
 
 function getSpeed() {
     var speed = -1;
-    if (currentEnd != 0 && currentBegin != 0 && currentLength != 0) {
+    if (currentEnd != 0 && currentBegin != 0 && currentVideoLength != 0) {
         var ownTimeDuration = currentEnd - currentBegin;
-        speed = ownTimeDuration / currentLength;
-        console.log("currentLength: " + currentLength);
+        var ownTimeVideoSpeed = ownTimeDuration / currentVideoLength;
+        var step = calculateSpeedup(allElements, timerMap);
+        speed = step * ownTimeVideoSpeed;
+        console.log("currentVideoLength: " + currentVideoLength);
         console.log("ownTimeDuration: " + ownTimeDuration);
-        console.log("Calculated speed: " + speed);
+        console.log("ownTimeVideoSpeed: " + ownTimeVideoSpeed);
+        console.log("step: " + step);
+        console.log("speed: " + speed);
     }
+    // TODO ROUND
     return speed;
 }
 
@@ -78,7 +83,7 @@ $.getJSON(DATA_JSON, function(data) {
     var player = $("#mapvidjo")[0];
     player.addEventListener('loadedmetadata', function() {
         console.log("Length: " + player.duration);
-        currentLength = player.duration;
+        currentVideoLength = player.duration;
     });
     window.setTimeout(function() {
         setInterval(updateVideo, timerMap);

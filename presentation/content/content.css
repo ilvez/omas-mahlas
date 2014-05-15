@@ -4,6 +4,7 @@ body{
 	margin:0;
 	padding:0;
 	font-family: helvetica;
+
 }
 
 #content_gradient{
@@ -15,45 +16,52 @@ body{
 }
 
 #activities {
-	width: 1920px;
+	width: 1800px;
 	position: absolute;
-	left: 0;
-	top:0;
+	left: 60px;
+	top:0px;
 	-webkit-padding-start: 0;
 	padding: 0;
 	margin:0;
 }
 
+.action_icon_{
+		float: right;
+		margin-right: 60px;	
+		margin-top: 40px;
+
+
+}
 
 #activities li {
 	color: #FFFFFF;
 	overflow: hidden;
-	height: 330px;
-	padding: 10px;
+	height: 280px;
 	list-style: none;
 	font-size: 24px;
 	text-align: left;
-	border-bottom: 0px dotted #FFFFFF;
+	border: 0px dotted #FFFFFF;
 	width: 100%;
+	padding-top: 60px;
 }
 
 .lamp{
-	width: 250px;
-	height:330px;
-	float: left;	
+	width: 270px;
+	height:280px;
+		float: left;	
+
 	text-align: center;
-	padding-top: 50px;
 }
 
 .message{
-	height:330px;
-	width:1300px;
+	height:280px;
+	width:1200px;
 	float: left;	
 }
 
 .photo{
 	position: relative;
-	height:330px;
+	height:280px;
 	width: 330px;
 	float: left;	
 }

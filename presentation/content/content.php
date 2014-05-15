@@ -11,6 +11,7 @@
 <style>
 body {
     background: #000000;
+    overflow: hidden;
 }
 
 #content {

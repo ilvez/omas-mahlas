@@ -1,7 +1,7 @@
 
 var i = 0;
 var activities_ticker = $('#activities').newsTicker({
-        row_height:     330,
+        row_height:     360,
         max_rows:       3,
         direction:      'down',
         autostart:      0,
@@ -16,7 +16,7 @@ function show_activity(lamp, action, msg, photo, sound) {
             <div class="lamp"> \
                 <img src="/data/images/lamp_icons/' + lamp + '.svg" width="140" alt=""/> \
                 <br/> \
-                <img src="/data/images/action_icons/' + action + '.svg"  width="60" alt=""/> \
+                <img class="action_icon" src="/data/images/action_icons/' + action + '.svg"  width="60" alt=""/> \
             </div> \
             <div class="message"> \
                 <span class="dyntextval">' + msg + '</span> \

@@ -25,7 +25,7 @@ video {
 	$_GET["video"] = "anu-kuri_14-25-01_14-30-00_59.414554,24.718133_59.418062,24.720678";
 }
 ?>
-<video id="video" width="1919" height="1080" onended="next_video()">
+<video id="video" width="1919" height="1080" onended="next_video()" loop>
   <source src="data/streetvideo/videos/<?=$_GET["video"]?>.mp4" type="video/mp4">
   Your browser does not support HTML5 video.
 </video>
@@ -35,13 +35,15 @@ video {
 
 <script>
 
-
+function next_video(){
+	
+}
 
 setTimeout(function () {
 
 
 document.getElementById("video").play();
-		speed = document.getElementById("video").playbackRate = 10;
+		speed = document.getElementById("video").playbackRate = 1;
 
 
 },1000);

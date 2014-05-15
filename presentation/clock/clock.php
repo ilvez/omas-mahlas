@@ -58,7 +58,7 @@ function updateClock() {
     } else {
         currentTimestamp = currentTimestamp + timeStep;
     };
-    updateHtml(elem, new Date(currentTimestamp * 1000));
+    updateHtml(elem, timestampToDate(currentTimestamp));
 }
 
 // TODO: this must me moved to omas-mullis.js

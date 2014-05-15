@@ -1,0 +1,2 @@
+do shell script "/Applications/MAMP/bin/startApache.sh &" password "YOURPASSWORD" user name "YOURUSERNAME" with administrator privileges
+do shell script "/Applications/MAMP/bin/startmySQL.sh > /dev/null 2>&1"

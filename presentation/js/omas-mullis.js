@@ -1,7 +1,7 @@
 var DATA_JSON = "data/omas-mullis.json";
 var TIME_PER_SLIDE = 5;
 
-var STARTUP_TIME = 0;
+var STARTUP_TIME = 00000;
 //var STARTUP_TIME = 20000;
 
 var timerGlobal = 100;
@@ -25,14 +25,6 @@ function midnight(ts) {
     var d = timestampToDate(ts);
     d.setHours(23,59,59,999);
     return dateToTimestamp(d);
-}
-
-function dateToTimestamp(d) {
-    return Math.round(d / 1000);
-}
-
-function timestampToDate(ts) {
-    return new Date(ts * 1000);
 }
 
 function currentTime() {
@@ -84,4 +76,20 @@ function getNextTime(curElem, nextElem) {
 
 function calculateStep(current, next, timer) {
     return (next - current) / (TIME_PER_SLIDE * (1000 / timer));
+}
+
+// Calculates how fast we have to move in own_time to reach to next
+// element in TIME_PER_SLIDE
+function calculateSpeedup(elements, timer) {
+    var currentElem = getCurrentElem(elements);
+    var nextElem = getNextElem(elements);
+    return calculateStep(currentElem.time, nextElem.time, timer);
+}
+
+function timestampToDate(ts) {
+    return new Date(ts * 1000);
+}
+
+function dateToTimestamp(d) {
+    return Math.round(d / 1000);
 }

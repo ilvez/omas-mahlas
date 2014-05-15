@@ -64,23 +64,28 @@ class StoryData:
         logging.info("Number of files: %s", len(lines))
         return lines
 
-    def add_map_video(self, parts):
-        logging.debug("Searching elements for video: %s (%s -> %s)", parts.id, 
-                      ts_to_str(parts.begin_ts), ts_to_str(parts.end_ts))
-        for e in filter(lambda x: x.time >= parts.begin_ts and
-                                  x.time <= parts.end_ts and
-                                  x.id == parts.id, self.elements):
+    def add_map_video(self, videofile, filtered):
+        logging.debug("Searching elements for video: %s (%s -> %s)", videofile.id, 
+                      ts_to_str(videofile.begin_ts), ts_to_str(videofile.end_ts))
+        for e in filtered:
             logging.debug("\tFound: %s - %s", e.id, ts_to_str(e.time))
-            e.mapvideo = parts.relpath
-            e.mapvideo_begin = parts.begin_ts
-            e.mapvideo_end = parts.end_ts
+            e.mapvideo = videofile.relpath
+            e.mapvideo_begin = videofile.begin_ts
+            e.mapvideo_end = videofile.end_ts
+
+    def filter_events_with_video(self, videofile):
+        return filter(lambda x: x.time >= videofile.begin_ts and
+                                  x.time <= videofile.end_ts and
+                                  x.id == videofile.id, self.elements)
 
     def parse_map_video(self, vids):
         logging.info("Parsing map videos: %s", vids)
         file_list = self.dir_file_to_list(vids)
         for name in file_list:
-            parts = MapFileName(name, self.elements)
-            self.add_map_video(parts)
+            mapfile = MapFileName(name, self.elements)
+            filtered = self.filter_events_with_video(mapfile)
+            logging.error(filtered)
+            self.add_map_video(mapfile, filtered)
         pass
 
     def parse_street_video(self, vids):
@@ -157,7 +162,7 @@ class StoryElement:
         raw_datetime = self.fix(row[1] + "-" + self.format_time(row[2]))
         self.name = raw_name
         self.set_time(raw_datetime, CSV_TIME_FORMAT)
-        self.time_dt = ts_to_d(self.time)
+        self.time_dt = str(ts_to_str(self.time))
         self.light = row[3]
         self.action = row[4]
         self.data = row[5]
