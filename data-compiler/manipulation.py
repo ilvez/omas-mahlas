@@ -15,6 +15,8 @@ REL_PATH_MAPVIDEOS = '/data/mapvideo/'
 REL_PATH_STREETVIDEOS = 'streetvideo/videos/'
 
 
+
+
 class StoryData:
     elements = []
 
@@ -84,8 +86,10 @@ class StoryData:
         for name in file_list:
             mapfile = MapFileName(name, self.elements)
             filtered = self.filter_events_with_video(mapfile)
-            logging.error(filtered)
-            self.add_map_video(mapfile, filtered)
+            if len(filtered) > 0:
+                self.add_map_video(mapfile, filtered)
+            #else:
+                # TODO: video ilma eventide vahelisel ajal
         pass
 
     def parse_street_video(self, vids):
@@ -145,6 +149,7 @@ class StoryElement:
     name = None
     data = None
     light = None
+    light_id = None
     action = None
     screenshot = None
     rating = 0
@@ -169,6 +174,7 @@ class StoryElement:
         self.id = self.give_id()
         self.screenshot = REL_PATH_SCREENSHOTS + self.id + '/'\
             + self.format_path(row[6])
+        self.light_id = LAMP_MAPPING[self.light]
 
         # Do some tests
         shot_abs_path = os.getcwd() + self.screenshot
@@ -283,3 +289,36 @@ def compile(file, debug, json_path, mapvid, streetvid):
         with open(json_path, 'w') as json_file:
             json_file.write(story.to_json())
         logging.info("Output written to: %s", json_path)
+
+LAMP_MAPPING = {
+    "app": 1,
+    "mang": 2,
+    "pleier": 3,
+    "delfi": 4,
+    "sms": 5,
+    "www": 6,
+    "instagram": 7,
+    "raadio": 8,
+    "netflix": 9,
+    "e-kool": 10,
+    "google": 11,
+    "telefon": 12,
+    "twitter": 13,
+    "aratuskell": 14,
+    "kaamera": 15,
+    "blogi": 16,
+    "arvuti": 17,
+    "skype": 18,
+    "iosmessenger": 19,
+    "facebookmessenger": 20,
+    "ask.fm": 21,
+    "e-mail": 22,
+    "facebook": 23,
+    "tv": 24,
+    "wiki": 25,
+    "youtube": 26,
+    "foorum": 27,
+    "ebay": 28,
+    "snapchat": 29,
+    "tumblr": 30,
+    "whatsapp": 31 }
