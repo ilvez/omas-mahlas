@@ -148,6 +148,7 @@ class StoryElement:
     time_dt = None
     name = None
     data = None
+    data_pic = None
     light = None
     light_id = None
     action = None
@@ -157,6 +158,7 @@ class StoryElement:
     mapvideo_begin = None
     mapvideo_end = None
     streetvideo = None
+
 
     global CSV_TIME_FORMAT
     CSV_TIME_FORMAT = '%d:%m:%Y-%H:%M'
@@ -170,7 +172,7 @@ class StoryElement:
         self.time_dt = str(ts_to_str(self.time))
         self.light = row[3]
         self.action = self.action_mapping(row[4])
-        self.data = row[5]
+        self.parse_data_field(row[5])
         self.id = self.give_id()
         self.screenshot = REL_PATH_SCREENSHOTS + self.id + '/'\
             + self.format_path(row[6])
@@ -181,6 +183,17 @@ class StoryElement:
         if not self.test_path(shot_abs_path):
             logging.error('No such file: %s', self.screenshot)
             self.screenshot = REL_PATH_SCREENSHOTS + 'missing.png'
+
+    def parse_data_field(self, data):
+        logging.debug("data before: %s", data)
+        g = re.search('AA.*.jpg', data)
+        pic = ''
+        if g is not None:
+            pic = g.group(0)
+            data = data.replace(pic, '').strip()
+        self.data = data
+        self.data_pic = pic.lower()
+        logging.debug("data after: '%s', pic: '%s'", data, pic)
 
     def action_mapping(self, action):
         action = action.strip()
@@ -353,4 +366,5 @@ ACTION_MAPPING = {
     'Saabuv sõnum': 'sisse',
     'Saadan sõnumi': 'valja',
     'Vaatan infot': 'silm',
+    'telefon välja': 'valja',
     '': 'tyhi'}
