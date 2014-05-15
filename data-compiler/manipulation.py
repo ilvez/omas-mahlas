@@ -136,6 +136,7 @@ class StoryElement:
     '''StoryElement corresponds to one row in input CSV'''
     id = None
     time = None  # time is localtime Unix timestamp
+    time_dt = None
     name = None
     data = None
     light = None
@@ -156,6 +157,7 @@ class StoryElement:
         raw_datetime = self.fix(row[1] + "-" + self.format_time(row[2]))
         self.name = raw_name
         self.set_time(raw_datetime, CSV_TIME_FORMAT)
+        self.time_dt = ts_to_d(self.time)
         self.light = row[3]
         self.action = row[4]
         self.data = row[5]
