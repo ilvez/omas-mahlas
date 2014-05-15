@@ -1,7 +1,8 @@
 var DATA_JSON = "data/omas-mullis.json";
 var TIME_PER_SLIDE = 5;
 
-var STARTUP_TIME = 20000;
+var STARTUP_TIME = 0;
+//var STARTUP_TIME = 20000;
 
 var timerGlobal = 100;
 var timerShot = timerGlobal;
@@ -50,4 +51,37 @@ function position(elements) {
     var curPos = Math.round(currentPos / TIME_PER_SLIDE);
     console.log("Current position: " + curPos);
     return curPos;
+}
+
+function nextPosition(elements) {
+    var curPos = position(elements);
+    var nextPos = curPos + 1;
+    if (nextPos >= elements.length) {
+        nextPos = 0;
+    }
+    return nextPos;
+}
+
+function getCurrentElem(elements) {
+    return elements[position(elements)];
+}
+
+function getNextElem(elements) {
+    return elements[nextPosition(elements)];
+}
+
+function getNextTime(curElem, nextElem) {
+    // If next element is from new character
+    // then lets count down to midnight
+    var nextTime;
+    if (nextElem.id != curElem.id) {
+        nextTime = midnight(currentTimestamp);
+    } else {
+        nextTime = nextElem.time;
+    }
+    return nextTime;
+}
+
+function calculateStep(current, next, timer) {
+    return (next - current) / (TIME_PER_SLIDE * (1000 / timer));
 }
