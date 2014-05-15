@@ -34,7 +34,7 @@ class ControlPage(resource.Resource):
         """Gets an Failure, will pass the dictionary."""
         self.respond(data.value, request)
         
-            
+
     def render_POST(self, request):
         if 'I' in request.args:
             self.serial_proto.turn_on(request.args['I'])

@@ -8,4 +8,4 @@ __version__ = '0.1.0'
 from timofirmata import run
 
 def main():
-    run(port="/dev/ttyUSB0", baudrate=9600)
+    run(port="/dev/tty.usbmodem3d11", baudrate=115200)
