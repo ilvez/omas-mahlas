@@ -65,7 +65,7 @@ function getNextTime(elem, nextPos) {
 // Currently quite expensive, triggered too many times & updates nothing
 function updateClock() {
     var curPos = position(allElements);
-    var elem = allElements[curPos];
+    var elem = getCurrentElem(allElements);
 
     // If we have new element lets calulate new step
     if (originalTime != elem.time) {
