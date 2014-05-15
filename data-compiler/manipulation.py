@@ -169,7 +169,7 @@ class StoryElement:
         self.set_time(raw_datetime, CSV_TIME_FORMAT)
         self.time_dt = str(ts_to_str(self.time))
         self.light = row[3]
-        self.action = row[4]
+        self.action = self.action_mapping(row[4])
         self.data = row[5]
         self.id = self.give_id()
         self.screenshot = REL_PATH_SCREENSHOTS + self.id + '/'\
@@ -181,6 +181,11 @@ class StoryElement:
         if not self.test_path(shot_abs_path):
             logging.error('No such file: %s', self.screenshot)
             self.screenshot = REL_PATH_SCREENSHOTS + 'missing.png'
+
+    def action_mapping(self, action):
+        if ACTION_MAPPING.has_key(action):
+            action = ACTION_MAPPING[action]
+        return action
 
     def format_time(self, time):
         if (len(time) == 4):  # deeply sophisticated
@@ -322,3 +327,29 @@ LAMP_MAPPING = {
     "snapchat": 29,
     "tumblr": 30,
     "whatsapp": 31 }
+
+ACTION_MAPPING = {
+    'uus pilt': 'silm',
+    'sõnum välja': 'valja',
+    'sõnum sisse': 'sisse',
+    'vaatan': 'silm',
+    'teade': 'sisse',
+    'teated': 'sisse',
+    'uus postitus': 'valja',
+    'uus säuts': 'valja',
+    'otsin': 'otsing',
+    'kõne välja': 'valja',
+    'säutsun': 'valja',
+    'kuulan': 'kuulan',
+    'kõne sisse': 'sisse',
+    'postitan': 'valja',
+    'pildistan': 'silm',
+    'Uus säuts': 'valja',
+    'allalaadimine': 'sisse',
+    'Kuulan': 'kuulan',
+    'Vaatan': 'silm',
+    'uus teade': 'sisse',
+    'Saabuv sõnum': 'sisse',
+    'Saadan sõnumi': 'valja',
+    'Vaatan infot': 'silm',
+    '': 'tyhi'}
