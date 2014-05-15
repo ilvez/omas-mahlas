@@ -1,4 +1,7 @@
 <style type="text/css">
+body{
+    overflow: hidden;
+}
     #notification {
         position:   fixed;
         z-index:    2;
@@ -10,7 +13,7 @@
     }
 </style>
 <div id="notification">
-    <img src="/data/images/lamp_icons/telefon.svg" width="40" alt="">
+    <img id="lamp_icon" src="/data/images/lamp_icons/telefon.svg" width="40" alt="">
 </div>
 
 <video id="mapvidjo" width="1919" height="1080">
@@ -25,6 +28,13 @@ var currentBegin = 0;
 var currentEnd = 0;
 var currentVideoLength = 0;
 var currentSpeed = -1;
+
+function animate_lamp_icon(lamp){
+
+    $("#lamp_icon").attr("src", "/data/images/lamp_icons/"+lamp+".svg");
+    $("#lamp_icon").fadeIn(100).delay(2000).fadeOut(500);;
+
+}
 
 function playNewVideo(elem) {
     currentVideo = elem.mapvideo;
@@ -75,6 +85,8 @@ function updateVideo() {
 
     if (elem != currentElem) {
         // TODO
+            animate_lamp_icon(elem.light);
+            currentElem  = elem;
     }
 }
 

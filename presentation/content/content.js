@@ -12,6 +12,9 @@ var activities_ticker = $('#activities').newsTicker({
 var audio = new Audio();
 
 function show_activity(lamp, action, msg, photo, sound) {
+
+   
+  
     str = '<li> \
             <div class="lamp"> \
                 <img src="/data/images/lamp_icons/' + lamp + '.svg" width="140" alt=""/> \
@@ -22,9 +25,13 @@ function show_activity(lamp, action, msg, photo, sound) {
                 <span class="dyntextval">' + msg + '</span> \
             </div> \
             <div class="photo"> \
-                <img class="ring_cut" src="/content/ring_cut.png" width="250" alt=""/> \
-                <img src="/data/content/' + photo + '"  width="250" alt=""/> \
-            </div> \
+                <img class="ring_cut" src="/content/ring_cut.png" width="250" alt=""/>';
+
+                if (photo!=''){
+                    str = str + ' <img src="/data/content/' + photo + '"  width="250" height="250" alt=""/>';
+                }
+                
+               str = str + ' </div> \
         </li>';
 
     $('#activities').append(str);

@@ -20,7 +20,7 @@ body {
 }
 
 #time {
-    margin-top:  100px;
+    margin-top:  200px;
     font-size:   400px;
     line-height: 300px;
     color:       yellow;
@@ -50,7 +50,7 @@ var currentTimestamp = 0;
 var timeStep = 0;
 
 function updateHtml(elem, storyDate) {
-    var txt =  "<div id='time'>" + storyDate.toString("HH:mm:ss") + "</div>\n<div id='name'>" + elem.name.toUpperCase() + ",17a<br/>"+ storyDate.toString("dd.MM.yyyy") +"</div>";
+    var txt =  "<div id='time'>" + storyDate.toString("HH:mm:ss") + "</div>\n<div id='name'>" + elem.name.toUpperCase() + ", 17a<br/>kolmapaev, "+ storyDate.toString("dd.MM.yyyy") +"</div>";
     $("#clock").html(txt);
 }
 

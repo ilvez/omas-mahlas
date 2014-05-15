@@ -35,7 +35,7 @@ function updateContent() {
     if (elem != contentElement) {
         contentElement = elem;
         lampOff("");
-        show_activity(elem.light, elem.action, elem.data, "aahannagrete1.jpg", "140407_12.wav");
+        show_activity(elem.light, elem.action, elem.data, elem.data_pic, "140407_12.wav");
         lampOn(elem.light_id);
     }
 }
