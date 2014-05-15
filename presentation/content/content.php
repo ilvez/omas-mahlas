@@ -34,7 +34,9 @@ function updateContent() {
     var elem = allElements[position(allElements)];
     if (elem != contentElement) {
         contentElement = elem;
+        lampOff("");
         show_activity(elem.light, elem.action, elem.data, "aahannagrete1.jpg", "140407_12.wav");
+        lampOn(elem.light_id);
     }
 }
 
@@ -46,6 +48,23 @@ function displayData() {
         }, STARTUP_TIME);
     });
 }
+
+function lampOff(id) {
+    sendLampCommand("O=" + id);
+}
+
+function lampOn(id) {
+    sendLampCommand("I=" + id);
+}
+
+function sendLampCommand(data) {
+    $.ajax({
+      type: "POST",
+      url: "http://omasmullis.erm:8000",
+      data: data
+    });
+}
+
 
 displayData();
 </script>

@@ -7,6 +7,13 @@
     src: url('/data/fonts/Digital Dismay.otf');
 }
 
+@font-face
+{
+    font-family: LihulaBold;
+    src: url('/data/fonts/LihulaBold_v12.otf');
+}
+
+
 
 body {
     background:     #000000;
@@ -19,6 +26,8 @@ body {
     color:       yellow;
     text-align:  center;
     font-family: DigitalDismay;
+
+   
 }
 
 #name{
@@ -29,7 +38,7 @@ body {
     text-align: center;
     font-size: 100px;
     margin-top: 150px;
-
+     font-family: LihulaBold;
 }
 </style>
 
@@ -41,7 +50,7 @@ var currentTimestamp = 0;
 var timeStep = 0;
 
 function updateHtml(elem, storyDate) {
-    var txt =  "<div id='time'>" + storyDate.toString("HH:mm:ss") + "</div>\n<div id='name'>" + elem.name.toUpperCase() + "<br/>"+ storyDate.toString("dd.MM.yyyy") +"</div>";
+    var txt =  "<div id='time'>" + storyDate.toString("HH:mm:ss") + "</div>\n<div id='name'>" + elem.name.toUpperCase() + ",17a<br/>"+ storyDate.toString("dd.MM.yyyy") +"</div>";
     $("#clock").html(txt);
 }
 
