@@ -60,7 +60,7 @@ function lampOn(id) {
 function sendLampCommand(data) {
     $.ajax({
       type: "POST",
-      url: "http://omasmullis.erm:8000",
+      url: "http://192.168.111.145:8000",
       data: data
     });
 }

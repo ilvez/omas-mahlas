@@ -183,6 +183,7 @@ class StoryElement:
             self.screenshot = REL_PATH_SCREENSHOTS + 'missing.png'
 
     def action_mapping(self, action):
+        action = action.strip()
         if ACTION_MAPPING.has_key(action):
             action = ACTION_MAPPING[action]
         return action
