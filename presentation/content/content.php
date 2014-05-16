@@ -32,7 +32,7 @@ var contentElement = 1;
 
 function updateContent() {
     var elem = allElements[position(allElements)];
-    if (elem != contentElement) {
+    if (elem != contentElement && elem.light != null) {
         contentElement = elem;
         lampOff("");
         show_activity(elem.light, elem.action, elem.data, elem.data_pic, "140407_12.wav");

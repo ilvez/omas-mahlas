@@ -9,7 +9,7 @@ var timerShot = timerGlobal;
 var timerMap = 1000;
 var timerClock = 30;
 var timerContent = timerGlobal;
-var timerStreet = timerGlobal;
+var timerStreet = 1000;
 var fts = 0;
 
 // Returns timestamp of current day start 00.00

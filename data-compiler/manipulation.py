@@ -13,7 +13,7 @@ from itertools import groupby
 
 REL_PATH_SCREENSHOTS = '/data/screenshots/'
 REL_PATH_MAPVIDEOS = '/data/mapvideo/'
-REL_PATH_STREETVIDEOS = 'streetvideo/videos/'
+REL_PATH_STREETVIDEOS = '/data/streetvideo/videos/'
 
 CSV_TIME_FORMAT = '%d:%m:%Y-%H:%M'
 MIN_TIME_PER_SLIDE = 2
@@ -54,15 +54,17 @@ class StoryData:
         streetvideos = self.parse_videos(streetvid, STREET_VIDEO)
         self.sort_videofiles_by_time(mapvideos)
         self.sort_videofiles_by_time(streetvideos)
-        logging.error("%s", mapvideos)
-        logging.error("%s", streetvideos)
         self.add_videos(mapvideos, streetvideos)
+        self.sort_elements_by_time()
 
         # TODO: at the moment fullstorytime gets updated in parse_maps, and 
         # it is bad karma, because it should be calculated in one place, fix
 
     def sort_videofiles_by_time(self, files):
         files.sort(key=lambda x: x.begin, reverse=False)
+
+    def sort_elements_by_time(self):
+        self.elements.sort(key=lambda x: x.time, reverse=False)
 
     def calculate_time_for_slide(self):
         # Lets fix every element display time and calculate fullStoryTime
@@ -127,12 +129,10 @@ class StoryData:
     def find_name(self, videofile):
         return next(elem for elem in self.elements if elem.id == videofile.id).name
 
-    def add_video_event(e):
-        [i for i,x in enumerate(self.elements) if x.time > e.begin_ts]
-
-    def create_video_event(self, videofile):
-        video_event = StoryElement(videofile=videofile, name=self.find_name(videofile))
-        self.add_video_event(video_event)
+    def add_video_event(self, mapvideo, streetvideo):
+        event = StoryElement(mapvideo=mapvideo, streetvideo=streetvideo, name=self.find_name(mapvideo))
+        self.elements.append(event)
+        self.fullStoryTime += event.time_for_slide
         pass
 
     def add_videos(self, mapvideos, streetvideos):
@@ -143,16 +143,16 @@ class StoryData:
                 logging.debug("%s added to events: %s", streetvideo.type, streetvideo.name)
                 self.add_video(mapvideo, streetvideo, filtered)
             else:
-#                self.create_video_event(mapfile)
-#                logging.debug("Mapfile added alone: %s", mapfile.name) 
+                self.add_video_event(mapvideo, streetvideo)
+        logging.debug("%s added alone: %s", mapvideo.type, mapvideo.name) 
 
     def parse_videos(self, vids, type):
         logging.info("Parsing %s's: %s", type, vids)
         file_list = self.dir_file_to_list(vids)
-        mapvideos = []
+        videos = []
         for name in file_list:
-            mapvideos.append(VideoFile(name, self.elements, type))
-        return mapvideos
+            videos.append(VideoFile(name, self.elements, type))
+        return videos
 
 
 class VideoFile:
@@ -171,9 +171,12 @@ class VideoFile:
         self.begin = parts[1]
         self.end = parts[2]
         self.name = filename.replace('\n', '')
-        self.relpath = REL_PATH_MAPVIDEOS + self.name
         self.begin_end_time(elements)
         self.type = t_type
+        if self.type == MAP_VIDEO:
+            self.relpath = REL_PATH_MAPVIDEOS + self.name
+        else:
+            self.relpath = REL_PATH_STREETVIDEOS + self.name
         pass
 
     def begin_end_time(self, elements):
@@ -222,7 +225,7 @@ class StoryElement:
     time_for_slide = None
 
     # TODO: Remove spaghetti from constructor
-    def __init__(self, row=None, videofile=None, name=None):
+    def __init__(self, row=None, mapvideo=None, streetvideo=None, name=None):
         if row is not None:
             raw_name = row[0]
             raw_datetime = self.fix(row[1] + "-" + self.format_time(row[2]))
@@ -242,21 +245,20 @@ class StoryElement:
             if not self.test_path(shot_abs_path):
                 logging.error('No such file: %s', self.screenshot)
                 self.screenshot = REL_PATH_SCREENSHOTS + 'missing.png'
-        if videofile is not None:
-            self.id = videofile.id
-            self.time = videofile.begin_ts
-            self.time_dt = ts_to_str(self.time)
+        if mapvideo is not None and streetvideo is not None:
+            self.id = mapvideo.id
+            self.time = mapvideo.begin_ts
+            self.time_dt = str(ts_to_str(self.time))
             self.name = name
-            self.time_for_slide = 15 # TODO: ARVUTA!
-            if videofile.type == MAP_VIDEO:
-                self.mapvideo = videofile.relpath
-                self.mapvideo_begin = videofile.begin_ts
-                self.mapvideo_end = videofile.end_ts
-            else:
-                self.streetvideo = videofile.relpath
-                self.streetvideo_begin = videofile.begin_ts
-                self.streetvideo_end = videofile.end_ts
-
+            self.time_for_slide = mapvideo.end_ts - mapvideo.begin_ts 
+            if self.time_for_slide > 15:
+                self.time_for_slide = 15
+            self.mapvideo = mapvideo.relpath
+            self.mapvideo_begin = mapvideo.begin_ts
+            self.mapvideo_end = mapvideo.end_ts
+            self.streetvideo = streetvideo.relpath
+            self.streetvideo_begin = streetvideo.begin_ts
+            self.streetvideo_end = streetvideo.end_ts
 
     def parse_data_field(self, data):
         logging.debug("data before: %s", data)
