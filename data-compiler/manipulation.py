@@ -14,11 +14,14 @@ REL_PATH_SCREENSHOTS = '/data/screenshots/'
 REL_PATH_MAPVIDEOS = '/data/mapvideo/'
 REL_PATH_STREETVIDEOS = 'streetvideo/videos/'
 
-
-
+MIN_TIME_PER_SLIDE = 2
+MAX_TIME_PER_SLIDE = 6
+DEFAULT_TIME_PER_SLIDE = 4
 
 class StoryData:
     elements = []
+    metadata = []
+    fullStoryTime = 0
 
     def __init__(self, elems, mapvid, streetvid):
         for key, group in groupby(elems, lambda x: x.idx()):
@@ -37,8 +40,28 @@ class StoryData:
                 sec_add += sec_inc
                 logging.debug('Updated %s: rating: %s, time: %s',
                               e.idx(), e.rating, e.time)
-        self.elements = elems
 
+        # Lets fix every element display time and calculate fullStoryTime
+        seq = [len(x.data) for x in elems]
+        avg_len = sum(seq)/len(seq)
+        logging.debug("Element data length avg: %s", avg_len)
+
+        
+        for e in elems:
+            if e.light in ['facebookmessenger', 'facebook']:
+                length = len(e.data) / avg_len
+                if length > MAX_TIME_PER_SLIDE:
+                    length = MAX_TIME_PER_SLIDE
+                elif length < MIN_TIME_PER_SLIDE:
+                    length = MIN_TIME_PER_SLIDE
+                e.time_for_slide = length
+            else:
+                e.time_for_slide = DEFAULT_TIME_PER_SLIDE
+            logging.debug("%s - %s - %s", e.time_for_slide, e.light, e.data)
+            self.fullStoryTime += e.time_for_slide
+        logging.info("Full story time: %s", self.fullStoryTime)
+        
+        self.elements = elems
         # Now we parse map and streetview video files
         self.parse_map_video(mapvid)
         self.parse_street_video(streetvid)
@@ -158,6 +181,7 @@ class StoryElement:
     mapvideo_begin = None
     mapvideo_end = None
     streetvideo = None
+    time_for_slide = None
 
 
     global CSV_TIME_FORMAT
