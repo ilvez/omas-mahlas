@@ -92,6 +92,7 @@ function updateVideo() {
 
 $.getJSON(DATA_JSON, function(data) {
     allElements = data.elements;
+    setFullStoryTime(data.fullStoryTime);
     var player = $("#mapvidjo")[0];
     player.addEventListener('loadedmetadata', function() {
         console.log("Length: " + player.duration);

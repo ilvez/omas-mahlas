@@ -43,6 +43,7 @@ function updateContent() {
 function displayData() {
     $.getJSON(DATA_JSON, function(data) {
         allElements = data.elements;
+        setFullStoryTime(data.fullStoryTime);
         window.setTimeout(function() {
             setInterval(updateContent, timerContent);
         }, STARTUP_TIME);

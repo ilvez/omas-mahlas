@@ -56,14 +56,13 @@ function updateHtml(elem, storyDate) {
 
 // Currently quite expensive, triggered too many times & updates nothing
 function updateClock() {
-    var curPos = position(allElements);
     var elem = getCurrentElem(allElements);
 
     // If we have new element lets calulate new step
     if (originalTime != elem.time) {
         originalTime = elem.time;
         currentTimestamp = originalTime;
-        timeStep = calculateStep(originalTime, getNextTime(elem, getNextElem(allElements)), timerClock);
+        timeStep = calculateStep(elem, getNextElem(allElements), timerClock);
     } else {
         currentTimestamp = currentTimestamp + timeStep;
     };
@@ -73,6 +72,7 @@ function updateClock() {
 // TODO: this must me moved to omas-mullis.js
 $.getJSON(DATA_JSON, function(data) {
     allElements = data.elements;
+    setFullStoryTime(data.fullStoryTime);
     window.setTimeout(function() {
         setInterval(updateClock, timerClock);
     }, STARTUP_TIME);

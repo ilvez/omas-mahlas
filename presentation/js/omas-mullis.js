@@ -1,5 +1,5 @@
 var DATA_JSON = "data/omas-mullis.json";
-var TIME_PER_SLIDE = 5;
+//var TIME_PER_SLIDE = 5;
 
 //var STARTUP_TIME = 00000;
 var STARTUP_TIME = 10000;
@@ -10,6 +10,7 @@ var timerMap = 1000;
 var timerClock = 30;
 var timerContent = timerGlobal;
 var timerStreet = timerGlobal;
+var fts = 0;
 
 // Returns timestamp of current day start 00.00
 function startOfDay() {
@@ -31,16 +32,31 @@ function currentTime() {
     return Math.round($.now() / 1000);
 }
 
-function fullStoryTime(elements) {
-    return elements.length * TIME_PER_SLIDE;
+//function fullStoryTime(elements) {
+//    return elements.length * TIME_PER_SLIDE;
+//}
+
+function setFullStoryTime(time) {
+    fts = time;
+}
+
+function getFullStoryTime() {
+    return fts;
 }
 
 // Function takes all story elements and using system time
 // returns current element
 function position(elements) {
     var secondsToNow = currentTime() - startOfDay();
-    var currentPos = secondsToNow % fullStoryTime(elements);
-    var curPos = Math.round(currentPos / TIME_PER_SLIDE);
+    var currentStoryTime = secondsToNow % getFullStoryTime();
+    var searchTime = 0;
+    var curPos = 0;
+    //console.log("Current story time: " + currentStoryTime);
+    // TODO: GETS MORE EXPENSIVE TO CALCULATE WHEN STORY END
+    for (i = 0; searchTime <= currentStoryTime ; i++) {
+        searchTime += elements[i].time_for_slide;
+        curPos = i;
+    }
     console.log("Current position: " + curPos);
     return curPos;
 }
@@ -74,8 +90,12 @@ function getNextTime(curElem, nextElem) {
     return nextTime;
 }
 
-function calculateStep(current, next, timer) {
-    return (next - current) / (TIME_PER_SLIDE * (1000 / timer));
+function calculateStep(currentElem, nextElem, timer) {
+    var next = getNextTime(currentElem, nextElem);
+    var current = currentElem.time;
+    //console.log("next: " + next);
+    //console.log("current: " + current);
+    return (next - current) / (nextElem.time_for_slide * (1000 / timer));
 }
 
 // Calculates how fast we have to move in own_time to reach to next

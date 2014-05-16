@@ -10,14 +10,14 @@
 var allElements = [];
 
 function updateScreenshot() {
-    var curPos = position(allElements);
-    var elem = allElements[curPos];
+    var elem = getCurrentElem(allElements);
     $("#kuvapauk").attr("src", elem.screenshot);
 }
 
 // TODO: this must me moved to omas-mullis.js
 $.getJSON(DATA_JSON, function(data) {
     allElements = data.elements;
+    setFullStoryTime(data.fullStoryTime);
     window.setTimeout(function() {
         setInterval(updateScreenshot, timerShot);
     }, STARTUP_TIME);
