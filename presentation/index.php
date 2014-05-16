@@ -8,6 +8,7 @@
 
     <script src="js/jquery-2.1.1.min.js"></script>
     <script src="js/date.js"></script>
+    <script src="js/purl.js"></script>
     <script src="js/omas-mullis.js"></script>
 </head>
 

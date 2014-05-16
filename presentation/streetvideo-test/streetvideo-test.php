@@ -73,6 +73,12 @@ function updateVideo() {
 $.getJSON(DATA_JSON, function(data) {
     allElements = data.elements;
     setFullStoryTime(data.fullStoryTime);
+    var tempPos = ($.url().param('position'));
+    console.log("inpos: "+inputPosition);
+    if (tempPos != null) {
+        inputPosition = tempPos;
+    }
+    console.log("inpos: "+inputPosition);
     var player = $("#streetvidjo")[0];
     player.addEventListener('loadedmetadata', function() {
         console.log("Length: " + player.duration);

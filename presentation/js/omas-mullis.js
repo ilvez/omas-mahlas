@@ -1,8 +1,8 @@
 var DATA_JSON = "data/omas-mullis.json";
 //var TIME_PER_SLIDE = 5;
 
-//var STARTUP_TIME = 00000;
-var STARTUP_TIME = 10000;
+var STARTUP_TIME = 00000;
+//var STARTUP_TIME = 10000;
 
 var timerGlobal = 100;
 var timerShot = timerGlobal;
@@ -11,10 +11,15 @@ var timerClock = 30;
 var timerContent = timerGlobal;
 var timerStreet = 1000;
 var fts = 0;
+var inputPosition = null;
 
 // Returns timestamp of current day start 00.00
 function startOfDay() {
-    return startOfDayTimestamp(new Date());
+    var d = new Date();
+    if (inputPosition != null) {
+        d = timestampToDate(inputPositon);
+    }
+    return startOfDayTimestamp(d);
 }
 
 function startOfDayTimestamp(now) {
@@ -57,7 +62,7 @@ function position(elements) {
         searchTime += elements[i].time_for_slide;
         curPos = i;
     }
-    console.log("Current position: " + curPos);
+    console.log("Calculated position: " + curPos);
     return curPos;
 }
 
@@ -93,8 +98,8 @@ function getNextTime(curElem, nextElem) {
 function calculateStep(currentElem, nextElem, timer) {
     var next = getNextTime(currentElem, nextElem);
     var current = currentElem.time;
-    //console.log("next: " + next);
-    //console.log("current: " + current);
+    console.log("next: " + next);
+    console.log("current: " + current);
     return (next - current) / (nextElem.time_for_slide * (1000 / timer));
 }
 
@@ -103,6 +108,8 @@ function calculateStep(currentElem, nextElem, timer) {
 function calculateSpeedup(elements, timer) {
     var currentElem = getCurrentElem(elements);
     var nextElem = getNextElem(elements);
+    console.log("calculateSpeedup: currentElem: " + currentElem);
+    console.log("calculateSpeedup: nextElem: " + nextElem);
     return calculateStep(currentElem.time, nextElem.time, timer);
 }
 
