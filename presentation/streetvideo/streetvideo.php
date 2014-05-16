@@ -1,24 +1,10 @@
-<style type="text/css">
 
-body{
-	background-color: #000000;
-}
-#speed{
-	z-index: 10;
-	position: absolute;
-	right:10px;
-	top:10px;
-	background-color: #FFFFFF;
+<!-- OLULINE -->
+<div id="status">VAADE</div>
+<div id="streeviewlogo"><img src="/data/images/streetview_icon.svg" width="100"/></div>
+<!-- OLULINE -->
 
-}
-video {
-  width: 100%    !important;
-  height: auto   !important;
-}
 
-</style>
-
-<div id="speed"></div>
 
 <? if (!$_GET["video"]){
 
@@ -34,6 +20,16 @@ video {
 
 
 <script>
+
+////////////////////////////////////////////////////////
+
+// OLULINE: 
+
+function display_status(name){
+    $("#status").html(name + " / VAADE");
+}
+
+////////////////////////////////////////////////////////
 
 function next_video(){
 	

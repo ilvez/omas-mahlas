@@ -1,20 +1,9 @@
-<style type="text/css">
-body{
-    overflow: hidden;
-}
-    #notification {
-        position:   fixed;
-        z-index:    2;
-        top:        50%;
-        left:       50%;
-        margin:     -20px 0 0 -20px;
-        width:      40px;
-        height:     40px;
-    }
-</style>
+
 <div id="notification">
-    <img id="lamp_icon" src="/data/images/lamp_icons/telefon.svg" width="40" alt="">
+    <img id="lamp_icon" src="/data/images/lamp_icons/telefon.svg" width="40" height="40" alt=""/>
 </div>
+
+<div id="status">ASUKOHT</div>
 
 <video id="mapvidjo" width="1919" height="1080">
     <source id="mapvidjo-src" src="" type="video/ogg">
@@ -31,9 +20,14 @@ var currentSpeed = -1;
 
 function animate_lamp_icon(lamp){
 
+    $("#lamp_icon").fadeOut(1);
     $("#lamp_icon").attr("src", "/data/images/lamp_icons/"+lamp+".svg");
-    $("#lamp_icon").fadeIn(100).delay(2000).fadeOut(500);;
+    $("#lamp_icon").delay(2).fadeIn(50).delay(1000).fadeOut(300);;
 
+}
+
+function display_status(name){
+    $("#status").html(name + " / ASUKOHT");
 }
 
 function playNewVideo(elem) {
@@ -86,6 +80,8 @@ function updateVideo() {
     if (elem != currentElem) {
         // TODO
             animate_lamp_icon(elem.light);
+
+          display_status(elem.name);
             currentElem  = elem;
     }
 }

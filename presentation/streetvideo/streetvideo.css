@@ -1,0 +1,21 @@
+body{
+    overflow: hidden;
+}
+#streeviewlogo {
+    position:   fixed;
+    z-index: 2;
+    bottom: 30px;
+    right: 30px;
+    height: 30px;
+    padding: 0px;
+
+}
+
+
+video {
+  width:  auto   !important;
+  height: 100% !important;
+  position: absolute;
+  bottom: 0;
+  left:0;
+}

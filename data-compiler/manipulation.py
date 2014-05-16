@@ -7,6 +7,7 @@ import logging
 import time
 import os
 import re
+import itertools
 from datetime import datetime
 from itertools import groupby
 
@@ -14,9 +15,13 @@ REL_PATH_SCREENSHOTS = '/data/screenshots/'
 REL_PATH_MAPVIDEOS = '/data/mapvideo/'
 REL_PATH_STREETVIDEOS = 'streetvideo/videos/'
 
+CSV_TIME_FORMAT = '%d:%m:%Y-%H:%M'
 MIN_TIME_PER_SLIDE = 2
 MAX_TIME_PER_SLIDE = 6
 DEFAULT_TIME_PER_SLIDE = 4
+
+MAP_VIDEO = 'MAP_VIDEO'
+STREET_VIDEO = 'STREET_VIDEO'
 
 class StoryData:
     elements = []
@@ -41,13 +46,30 @@ class StoryData:
                 logging.debug('Updated %s: rating: %s, time: %s',
                               e.idx(), e.rating, e.time)
 
+        self.elements = elems
+        self.calculate_time_for_slide()
+
+        # Now we parse map and streetview video files
+        mapvideos = self.parse_videos(mapvid, MAP_VIDEO)
+        streetvideos = self.parse_videos(streetvid, STREET_VIDEO)
+        self.sort_videofiles_by_time(mapvideos)
+        self.sort_videofiles_by_time(streetvideos)
+        logging.error("%s", mapvideos)
+        logging.error("%s", streetvideos)
+        self.add_videos(mapvideos, streetvideos)
+
+        # TODO: at the moment fullstorytime gets updated in parse_maps, and 
+        # it is bad karma, because it should be calculated in one place, fix
+
+    def sort_videofiles_by_time(self, files):
+        files.sort(key=lambda x: x.begin, reverse=False)
+
+    def calculate_time_for_slide(self):
         # Lets fix every element display time and calculate fullStoryTime
-        seq = [len(x.data) for x in elems]
+        seq = [len(x.data) for x in self.elements]
         avg_len = sum(seq)/len(seq)
         logging.debug("Element data length avg: %s", avg_len)
-
-        
-        for e in elems:
+        for e in self.elements:
             if e.light in ['facebookmessenger', 'facebook']:
                 length = len(e.data) / avg_len
                 if length > MAX_TIME_PER_SLIDE:
@@ -60,11 +82,6 @@ class StoryData:
             logging.debug("%s - %s - %s", e.time_for_slide, e.light, e.data)
             self.fullStoryTime += e.time_for_slide
         logging.info("Full story time: %s", self.fullStoryTime)
-        
-        self.elements = elems
-        # Now we parse map and streetview video files
-        self.parse_map_video(mapvid)
-        self.parse_street_video(streetvid)
 
     def to_json(self):
         return json.dumps(self, default=lambda o: o.__dict__,
@@ -89,39 +106,56 @@ class StoryData:
         logging.info("Number of files: %s", len(lines))
         return lines
 
-    def add_map_video(self, videofile, filtered):
-        logging.debug("Searching elements for video: %s (%s -> %s)", videofile.id, 
-                      ts_to_str(videofile.begin_ts), ts_to_str(videofile.end_ts))
+    def add_video(self, mapvideo, streetvideo, filtered):
+        logging.debug("Searching elements for video: %s (%s -> %s)", mapvideo.id, 
+                      ts_to_str(mapvideo.begin_ts), ts_to_str(mapvideo.end_ts))
         for e in filtered:
             logging.debug("\tFound: %s - %s", e.id, ts_to_str(e.time))
-            e.mapvideo = videofile.relpath
-            e.mapvideo_begin = videofile.begin_ts
-            e.mapvideo_end = videofile.end_ts
+            e.mapvideo = mapvideo.relpath
+            e.mapvideo_begin = mapvideo.begin_ts
+            e.mapvideo_end = mapvideo.end_ts
+            e.streetvideo = streetvideo.relpath
+            e.streetvideo_begin = streetvideo.begin_ts
+            e.streetvideo_end = streetvideo.end_ts
 
     def filter_events_with_video(self, videofile):
         return filter(lambda x: x.time >= videofile.begin_ts and
                                   x.time <= videofile.end_ts and
                                   x.id == videofile.id, self.elements)
 
-    def parse_map_video(self, vids):
-        logging.info("Parsing map videos: %s", vids)
-        file_list = self.dir_file_to_list(vids)
-        for name in file_list:
-            mapfile = MapFileName(name, self.elements)
-            filtered = self.filter_events_with_video(mapfile)
+    # Finds first timestamp with matching id, we need date
+    def find_name(self, videofile):
+        return next(elem for elem in self.elements if elem.id == videofile.id).name
+
+    def add_video_event(e):
+        [i for i,x in enumerate(self.elements) if x.time > e.begin_ts]
+
+    def create_video_event(self, videofile):
+        video_event = StoryElement(videofile=videofile, name=self.find_name(videofile))
+        self.add_video_event(video_event)
+        pass
+
+    def add_videos(self, mapvideos, streetvideos):
+        for mapvideo, streetvideo in itertools.izip(mapvideos, streetvideos): 
+            filtered = self.filter_events_with_video(mapvideo)
             if len(filtered) > 0:
-                self.add_map_video(mapfile, filtered)
-            #else:
-                # TODO: video ilma eventide vahelisel ajal
-        pass
+                logging.debug("%s added to events: %s", mapvideo.type, mapvideo.name)
+                logging.debug("%s added to events: %s", streetvideo.type, streetvideo.name)
+                self.add_video(mapvideo, streetvideo, filtered)
+            else:
+#                self.create_video_event(mapfile)
+#                logging.debug("Mapfile added alone: %s", mapfile.name) 
 
-    def parse_street_video(self, vids):
-        logging.info("Parsing streetview videos: %s", vids)
+    def parse_videos(self, vids, type):
+        logging.info("Parsing %s's: %s", type, vids)
         file_list = self.dir_file_to_list(vids)
-        pass
+        mapvideos = []
+        for name in file_list:
+            mapvideos.append(VideoFile(name, self.elements, type))
+        return mapvideos
 
 
-class MapFileName:
+class VideoFile:
     id = None
     begin = None
     end = None
@@ -129,8 +163,9 @@ class MapFileName:
     relpath = None
     begin_ts = None
     end_ts = None
+    type = None
 
-    def __init__(self, filename, elements):
+    def __init__(self, filename, elements, t_type):
         parts = filename.split('_')
         self.id = self.remove_dash(parts[0])
         self.begin = parts[1]
@@ -138,6 +173,7 @@ class MapFileName:
         self.name = filename.replace('\n', '')
         self.relpath = REL_PATH_MAPVIDEOS + self.name
         self.begin_end_time(elements)
+        self.type = t_type
         pass
 
     def begin_end_time(self, elements):
@@ -181,32 +217,46 @@ class StoryElement:
     mapvideo_begin = None
     mapvideo_end = None
     streetvideo = None
+    streetvideo_begin = None
+    streetvideo_end = None
     time_for_slide = None
 
+    # TODO: Remove spaghetti from constructor
+    def __init__(self, row=None, videofile=None, name=None):
+        if row is not None:
+            raw_name = row[0]
+            raw_datetime = self.fix(row[1] + "-" + self.format_time(row[2]))
+            self.name = raw_name
+            self.set_time(raw_datetime, CSV_TIME_FORMAT)
+            self.time_dt = str(ts_to_str(self.time))
+            self.light = row[3]
+            self.action = self.action_mapping(row[4])
+            self.parse_data_field(row[5])
+            self.id = self.give_id()
+            self.screenshot = REL_PATH_SCREENSHOTS + self.id + '/'\
+                + self.format_path(row[6])
+            self.light_id = LAMP_MAPPING[self.light]
 
-    global CSV_TIME_FORMAT
-    CSV_TIME_FORMAT = '%d:%m:%Y-%H:%M'
+            # Do some tests
+            shot_abs_path = os.getcwd() + self.screenshot
+            if not self.test_path(shot_abs_path):
+                logging.error('No such file: %s', self.screenshot)
+                self.screenshot = REL_PATH_SCREENSHOTS + 'missing.png'
+        if videofile is not None:
+            self.id = videofile.id
+            self.time = videofile.begin_ts
+            self.time_dt = ts_to_str(self.time)
+            self.name = name
+            self.time_for_slide = 15 # TODO: ARVUTA!
+            if videofile.type == MAP_VIDEO:
+                self.mapvideo = videofile.relpath
+                self.mapvideo_begin = videofile.begin_ts
+                self.mapvideo_end = videofile.end_ts
+            else:
+                self.streetvideo = videofile.relpath
+                self.streetvideo_begin = videofile.begin_ts
+                self.streetvideo_end = videofile.end_ts
 
-    def __init__(self, row):
-        # set variables
-        raw_name = row[0]
-        raw_datetime = self.fix(row[1] + "-" + self.format_time(row[2]))
-        self.name = raw_name
-        self.set_time(raw_datetime, CSV_TIME_FORMAT)
-        self.time_dt = str(ts_to_str(self.time))
-        self.light = row[3]
-        self.action = self.action_mapping(row[4])
-        self.parse_data_field(row[5])
-        self.id = self.give_id()
-        self.screenshot = REL_PATH_SCREENSHOTS + self.id + '/'\
-            + self.format_path(row[6])
-        self.light_id = LAMP_MAPPING[self.light]
-
-        # Do some tests
-        shot_abs_path = os.getcwd() + self.screenshot
-        if not self.test_path(shot_abs_path):
-            logging.error('No such file: %s', self.screenshot)
-            self.screenshot = REL_PATH_SCREENSHOTS + 'missing.png'
 
     def parse_data_field(self, data):
         logging.debug("data before: %s", data)
@@ -298,7 +348,7 @@ def extract_csv(file):
         for row in csvdata:
             logging.debug(row)
             if (row[0] != 'nimi'):
-                row_data = StoryElement(row)
+                row_data = StoryElement(row=row)
                 data.append(row_data)
         return data
 

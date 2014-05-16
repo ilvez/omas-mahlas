@@ -1,3 +1,8 @@
-body {
-	background-color: #000000;
+
+img.keset {
+	display:        block;
+	margin-left:    auto;
+	margin-right:   auto;
+	max-height:     900px;
+	margin-top: 50px;
 }

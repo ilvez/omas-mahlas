@@ -1,17 +1,16 @@
-<style type="text/css">
-    img.keset {
-        display:        block;
-        margin-left:    auto;
-        margin-right:   auto;
-        max-height:     900px;
-    }
-</style>
+
 <script>
 var allElements = [];
 
 function updateScreenshot() {
     var elem = getCurrentElem(allElements);
     $("#kuvapauk").attr("src", elem.screenshot);
+    display_status(elem.name);
+
+}
+
+function display_status(name){
+    $("#status").html(name + " / SEADE");
 }
 
 // TODO: this must me moved to omas-mullis.js
@@ -24,4 +23,5 @@ $.getJSON(DATA_JSON, function(data) {
 });
 </script>
 
+<div id="status">SEADE</div>
 <img src="" id="kuvapauk" class="keset" />
