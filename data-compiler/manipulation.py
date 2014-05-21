@@ -23,6 +23,7 @@ DEFAULT_TIME_PER_SLIDE = 4
 MAP_VIDEO = 'MAP_VIDEO'
 STREET_VIDEO = 'STREET_VIDEO'
 
+
 class StoryData:
     elements = []
     metadata = []
@@ -57,7 +58,7 @@ class StoryData:
         self.add_videos(mapvideos, streetvideos)
         self.sort_elements_by_time()
 
-        # TODO: at the moment fullstorytime gets updated in parse_maps, and 
+        # TODO: at the moment fullstorytime gets updated in parse_maps, and
         # it is bad karma, because it should be calculated in one place, fix
 
     def sort_videofiles_by_time(self, files):
@@ -109,7 +110,8 @@ class StoryData:
         return lines
 
     def add_video(self, mapvideo, streetvideo, filtered):
-        logging.debug("Searching elements for video: %s (%s -> %s)", mapvideo.id, 
+        logging.debug("Searching elements for video: %s (%s -> %s)",
+                      mapvideo.id,
                       ts_to_str(mapvideo.begin_ts), ts_to_str(mapvideo.end_ts))
         for e in filtered:
             logging.debug("\tFound: %s - %s", e.id, ts_to_str(e.time))
@@ -121,30 +123,34 @@ class StoryData:
             e.streetvideo_end = streetvideo.end_ts
 
     def filter_events_with_video(self, videofile):
-        return filter(lambda x: x.time >= videofile.begin_ts and
-                                  x.time <= videofile.end_ts and
-                                  x.id == videofile.id, self.elements)
+        return filter(lambda x: x.time >= videofile.begin_ts
+                      and x.time <= videofile.end_ts and
+                      x.id == videofile.id, self.elements)
 
     # Finds first timestamp with matching id, we need date
     def find_name(self, videofile):
-        return next(elem for elem in self.elements if elem.id == videofile.id).name
+        return next(elem for elem in self.elements
+                    if elem.id == videofile.id).name
 
     def add_video_event(self, mapvideo, streetvideo):
-        event = StoryElement(mapvideo=mapvideo, streetvideo=streetvideo, name=self.find_name(mapvideo))
+        event = StoryElement(mapvideo=mapvideo, streetvideo=streetvideo,
+                             name=self.find_name(mapvideo))
         self.elements.append(event)
         self.fullStoryTime += event.time_for_slide
         pass
 
     def add_videos(self, mapvideos, streetvideos):
-        for mapvideo, streetvideo in itertools.izip(mapvideos, streetvideos): 
+        for mapvideo, streetvideo in itertools.izip(mapvideos, streetvideos):
             filtered = self.filter_events_with_video(mapvideo)
             if len(filtered) > 0:
-                logging.debug("%s added to events: %s", mapvideo.type, mapvideo.name)
-                logging.debug("%s added to events: %s", streetvideo.type, streetvideo.name)
+                logging.debug("%s added to events: %s",
+                              mapvideo.type, mapvideo.name)
+                logging.debug("%s added to events: %s",
+                              streetvideo.type, streetvideo.name)
                 self.add_video(mapvideo, streetvideo, filtered)
             else:
                 self.add_video_event(mapvideo, streetvideo)
-        logging.debug("%s added alone: %s", mapvideo.type, mapvideo.name) 
+        logging.debug("%s added alone: %s", mapvideo.type, mapvideo.name)
 
     def parse_videos(self, vids, type):
         logging.info("Parsing %s's: %s", type, vids)
@@ -183,8 +189,9 @@ class VideoFile:
         day_ts = datetime.fromtimestamp(self.find_date(elements))
         self.begin_ts = d_to_ts(self.combine(day_ts, self.begin))
         self.end_ts = d_to_ts(self.combine(day_ts, self.end))
-        logging.debug("%s: %s (%s) -> %s (%s)", self.id, self.begin_ts, 
-                      ts_to_str(self.begin_ts), self.end_ts, ts_to_str(self.end_ts))
+        logging.debug("%s: %s (%s) -> %s (%s)", self.id, self.begin_ts,
+                      ts_to_str(self.begin_ts), self.end_ts,
+                      ts_to_str(self.end_ts))
 
     # Finds first timestamp with matching id, we need date
     def find_date(self, elements):
@@ -239,18 +246,19 @@ class StoryElement:
             self.screenshot = REL_PATH_SCREENSHOTS + self.id + '/'\
                 + self.format_path(row[6])
             self.light_id = LAMP_MAPPING[self.light]
+            self.video_only = 0
 
             # Do some tests
             shot_abs_path = os.getcwd() + self.screenshot
             if not self.test_path(shot_abs_path):
                 logging.error('No such file: %s', self.screenshot)
                 self.screenshot = REL_PATH_SCREENSHOTS + 'missing.png'
-        if mapvideo is not None and streetvideo is not None:
+        elif mapvideo is not None and streetvideo is not None:
             self.id = mapvideo.id
             self.time = mapvideo.begin_ts
             self.time_dt = str(ts_to_str(self.time))
             self.name = name
-            self.time_for_slide = mapvideo.end_ts - mapvideo.begin_ts 
+            self.time_for_slide = mapvideo.end_ts - mapvideo.begin_ts
             if self.time_for_slide > 15:
                 self.time_for_slide = 15
             self.mapvideo = mapvideo.relpath
@@ -259,6 +267,7 @@ class StoryElement:
             self.streetvideo = streetvideo.relpath
             self.streetvideo_begin = streetvideo.begin_ts
             self.streetvideo_end = streetvideo.end_ts
+            self.video_only = 1
 
     def parse_data_field(self, data):
         logging.debug("data before: %s", data)
@@ -273,7 +282,7 @@ class StoryElement:
 
     def action_mapping(self, action):
         action = action.strip()
-        if ACTION_MAPPING.has_key(action):
+        if ACTION_MAPPING in action:
             action = ACTION_MAPPING[action]
         return action
 
@@ -288,7 +297,7 @@ class StoryElement:
     def format_path(self, path):
         new_path = path.lower().replace(' ', '_')
         new_path = new_path.replace(':', '_')
-        new_path = new_path.replace('sceenshot', 'screenshot') ## Väga vajalik
+        new_path = new_path.replace('sceenshot', 'screenshot')  # Väga vajalik
         new_path = re.sub('\s+', ' ', new_path)
         return new_path
 
@@ -372,8 +381,10 @@ def setup_logging(debug):
 def d_to_ts(d):
     return int(round(time.mktime(d.timetuple())))
 
+
 def ts_to_str(ts):
     return datetime.fromtimestamp(ts)
+
 
 def compile(file, debug, json_path, mapvid, streetvid):
     setup_logging(debug)
@@ -416,7 +427,7 @@ LAMP_MAPPING = {
     "ebay": 28,
     "snapchat": 29,
     "tumblr": 30,
-    "whatsapp": 31 }
+    "whatsapp": 31}
 
 ACTION_MAPPING = {
     'uus pilt': 'silm',
