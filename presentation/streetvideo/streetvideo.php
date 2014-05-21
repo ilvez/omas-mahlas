@@ -1,66 +1,76 @@
-
 <!-- OLULINE -->
 <div id="status">VAADE</div>
 <div id="streeviewlogo"><img src="/data/images/streetview_icon.svg" width="100"/></div>
 <!-- OLULINE -->
 
-
-
-<? if (!$_GET["video"]){
-
-	$_GET["video"] = "anu-kuri_14-25-01_14-30-00_59.414554,24.718133_59.418062,24.720678";
-}
-?>
-<video id="video" width="1919" height="1080" onended="next_video()" loop>
-  <source src="data/streetvideo/videos/<?=$_GET["video"]?>.mp4" type="video/mp4">
-  Your browser does not support HTML5 video.
+<video id="streetvidjo" width="1919" height="1080">
+    <source id="streetvidjo-src" src="" type="video/mp4">
 </video>
 
-
-
-
 <script>
+var allElements = [];
+var currentElem = 0;
+var currentVideoLength = 0;
+var currentSpeed = -1;
+
+
+function playNewVideo(elem) {
+    $("#streetvidjo-src").attr("src", elem.streetvideo);
+    var player = $("#streetvidjo")[0];
+    player.playbackRate = 0.0001;
+    player.load();
+    player.play();
+    console.log("Playing: " + elem.streetvideo);
+}
+
+function setSpeed(speed) {
+    if (isNaN(speed) == false) {
+        $("#streetvidjo")[0].playbackRate = speed;
+        currentSpeed = speed;
+        console.log("Setting new speed: " + speed);
+    }
+}
+
+function updateVideo() {
+    var elem = getCurrentElem(allElements);
+
+    if (elem.streetvideo != null 
+            && elem.streetvideo != currentElem.streetvideo) {
+        playNewVideo(elem);
+    }
+
+    if (typeof elem.streetvideo_begin != 'undefined') {
+        var newSpeed = getVideoSpeed(elem, elem.streetvideo_begin, elem.streetvideo_end, currentVideoLength, timerStreet);
+        if (newSpeed != currentSpeed) {
+            setSpeed(newSpeed);
+        }
+    }
+
+    if (elem != currentElem) {
+        display_status(elem.name);
+        currentElem = elem;
+    }
+}
+
+$.getJSON(DATA_JSON, function(data) {
+    allElements = data.elements;
+    setFullStoryTime(data.fullStoryTime);
+    var player = $("#streetvidjo")[0];
+    player.addEventListener('loadedmetadata', function() {
+        console.log("Length: " + player.duration);
+        currentVideoLength = player.duration;
+    });
+    window.setTimeout(function() {
+        setInterval(updateVideo, timerStreet);
+    }, STARTUP_TIME);
+});
 
 ////////////////////////////////////////////////////////
-
 // OLULINE: 
 
 function display_status(name){
     $("#status").html(name + " / VAADE");
 }
-
 ////////////////////////////////////////////////////////
-
-function next_video(){
-	
-}
-
-setTimeout(function () {
-
-
-document.getElementById("video").play();
-		speed = document.getElementById("video").playbackRate = 1;
-
-
-},1000);
-
-myVid=document.getElementById("video");
-
-	for ( i = 0; i <= 3000; i++) {
- 		
- 		 doSetTimeout(i);
-
-	}
-
-function doSetTimeout(i) {
-  setTimeout(function() { 
-
-  		//document.getElementById("video").playbackRate=i*0.01;
-		speed = document.getElementById("video").playbackRate;
-		$("#speed").html(speed);
-
-
-   }, i*10+10000);
-}
 
 </script> 

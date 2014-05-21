@@ -11,14 +11,10 @@ var timerClock = 30;
 var timerContent = timerGlobal;
 var timerStreet = 1000;
 var fts = 0;
-var inputPosition = null;
 
 // Returns timestamp of current day start 00.00
 function startOfDay() {
     var d = new Date();
-    if (inputPosition != null) {
-        d = timestampToDate(inputPositon);
-    }
     return startOfDayTimestamp(d);
 }
 
@@ -48,6 +44,20 @@ function setFullStoryTime(time) {
 function getFullStoryTime() {
     return fts;
 }
+
+function getVideoSpeed(elem, video_begin, video_end, currentLength, timer) {
+    var speed = currentSpeed;
+    if (video_end != 0  && video_begin != 0 && currentLength != 0) {
+        var ownTimeDuration = video_end - video_begin;
+        var ownTimeVideoSpeed = ownTimeDuration / currentLength;
+        var step = calculateSpeedup(elem, allElements, timer);
+        speed = step / ownTimeVideoSpeed;
+        console.log("getVideoSpeed param: " + ownTimeDuration + "/" + ownTimeVideoSpeed + "/" + step + "/" + speed);
+    }
+    console.log("Calculated video speed: " + speed);
+    return speed;
+}
+
 
 // Function takes all story elements and using system time
 // returns current element
@@ -88,29 +98,25 @@ function getNextTime(curElem, nextElem) {
     // then lets count down to midnight
     var nextTime;
     if (nextElem.id != curElem.id) {
-        nextTime = midnight(currentTimestamp);
+        nextTime = midnight(curElem.time);
     } else {
         nextTime = nextElem.time;
     }
+    console.log("nextTime: " + nextTime);
     return nextTime;
 }
 
 function calculateStep(currentElem, nextElem, timer) {
     var next = getNextTime(currentElem, nextElem);
     var current = currentElem.time;
-    console.log("next: " + next);
-    console.log("current: " + current);
     return (next - current) / (nextElem.time_for_slide * (1000 / timer));
 }
 
 // Calculates how fast we have to move in own_time to reach to next
 // element in TIME_PER_SLIDE
-function calculateSpeedup(elements, timer) {
-    var currentElem = getCurrentElem(elements);
+function calculateSpeedup(currentElem, elements, timer) {
     var nextElem = getNextElem(elements);
-    console.log("calculateSpeedup: currentElem: " + currentElem);
-    console.log("calculateSpeedup: nextElem: " + nextElem);
-    return calculateStep(currentElem.time, nextElem.time, timer);
+    return calculateStep(currentElem, nextElem, timer);
 }
 
 function timestampToDate(ts) {

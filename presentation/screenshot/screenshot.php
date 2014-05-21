@@ -4,8 +4,10 @@ var allElements = [];
 
 function updateScreenshot() {
     var elem = getCurrentElem(allElements);
-    $("#kuvapauk").attr("src", elem.screenshot);
-    display_status(elem.name);
+    if (elem.video_only == 0) {
+        $("#kuvapauk").attr("src", elem.screenshot);
+        display_status(elem.name);
+    }
 
 }
 
