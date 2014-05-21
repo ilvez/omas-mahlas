@@ -241,12 +241,12 @@ class StoryElement:
             self.set_time(raw_datetime, CSV_TIME_FORMAT)
             self.time_dt = str(ts_to_str(self.time))
             self.light = row[3]
-            self.action = self.action_mapping(row[4])
+            self.action = self.set_mapping(row[4], ACTION_MAPPING)
             self.parse_data_field(row[5])
             self.id = self.give_id()
             self.screenshot = REL_PATH_SCREENSHOTS + self.id + '/'\
                 + self.format_path(row[6])
-            self.light_id = LAMP_MAPPING[self.light]
+            self.light_id = self.set_mapping(self.light, LAMP_MAPPING)
             self.video_only = 0
 
             # Do some tests
@@ -281,12 +281,14 @@ class StoryElement:
         self.data_pic = pic.lower()
         logging.debug("data after: '%s', pic: '%s'", data, pic)
 
-    def action_mapping(self, action):
+    def set_mapping(self, action, mapping):
+        logging.debug("Before mapping: %s", action)
         action = action.strip()
-        if action in ACTION_MAPPING:
-            action = ACTION_MAPPING[action]
+        if action in mapping:
+            action = mapping[action]
         else:
-            logging.error("Missing action mapping: %s", action)
+            logging.error("Missing mapping: %s", action)
+        logging.debug("After mapping: %s", action)
         return action
 
     def format_time(self, time):
