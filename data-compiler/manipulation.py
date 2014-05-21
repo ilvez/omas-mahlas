@@ -8,6 +8,7 @@ import time
 import os
 import re
 import itertools
+import sys
 from datetime import datetime
 from itertools import groupby
 
@@ -65,7 +66,7 @@ class StoryData:
         files.sort(key=lambda x: x.begin, reverse=False)
 
     def sort_elements_by_time(self):
-        self.elements.sort(key=lambda x: x.time, reverse=False)
+        self.elements.sort(key=lambda x: (x.id, x.time), reverse=False)
 
     def calculate_time_for_slide(self):
         # Lets fix every element display time and calculate fullStoryTime
@@ -282,8 +283,10 @@ class StoryElement:
 
     def action_mapping(self, action):
         action = action.strip()
-        if ACTION_MAPPING in action:
+        if action in ACTION_MAPPING:
             action = ACTION_MAPPING[action]
+        else:
+            logging.error("Missing action mapping: %s", action)
         return action
 
     def format_time(self, time):
@@ -374,7 +377,7 @@ def setup_logging(debug):
     if debug:
         lev = logging.DEBUG
         form = '%(levelname)8s: %(funcName)15s - %(message)s'
-    logging.basicConfig(level=lev, format=form)
+    logging.basicConfig(level=lev, format=form, stream=sys.stdout)
 
 
 # Date to local timestamp
@@ -454,4 +457,5 @@ ACTION_MAPPING = {
     'Saadan sõnumi': 'valja',
     'Vaatan infot': 'silm',
     'telefon välja': 'valja',
+    'telefon sisse': 'sisse',
     '': 'tyhi'}
