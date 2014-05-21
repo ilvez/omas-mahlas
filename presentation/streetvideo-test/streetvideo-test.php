@@ -10,75 +10,51 @@
 <script>
 var allElements = [];
 var currentElem = 0;
-var currentVideo = "";
-var currentBegin = 0;
-var currentEnd = 0;
 var currentVideoLength = 0;
 var currentSpeed = -1;
 
 
 function playNewVideo(elem) {
-    currentVideo = elem.streetvideo;
-    $("#streetvidjo-src").attr("src", currentVideo);
+    $("#streetvidjo-src").attr("src", elem.streetvideo);
     var player = $("#streetvidjo")[0];
+    player.playbackRate = 0.0001;
     player.load();
     player.play();
-    console.log("Playing: " + currentVideo);
-}
-
-function getSpeed() {
-    var speed = -1;
-    if (currentEnd != 0 && currentBegin != 0 && currentVideoLength != 0) {
-        var ownTimeDuration = currentEnd - currentBegin;
-        var ownTimeVideoSpeed = ownTimeDuration / currentVideoLength;
-        var step = calculateSpeedup(allElements, timerStreet);
-        speed = step * ownTimeVideoSpeed;
-        console.log("currentVideoLength: " + currentVideoLength);
-        console.log("ownTimeDuration: " + ownTimeDuration);
-        console.log("ownTimeVideoSpeed: " + ownTimeVideoSpeed);
-        console.log("step: " + step);
-        console.log("speed: " + speed);
-    }
-    // TODO ROUND
-    return speed;
+    console.log("Playing: " + elem.streetvideo);
 }
 
 function setSpeed(speed) {
-    $("#streetvidjo")[0].playbackRate = speed;
-    currentSpeed = speed;
-    console.log("Setting new speed: " + speed);
+    if (isNaN(speed) == false) {
+        $("#streetvidjo")[0].playbackRate = speed;
+        currentSpeed = speed;
+        console.log("Setting new speed: " + speed);
+    }
 }
 
 function updateVideo() {
-    var curPos = position(allElements);
-    var elem = allElements[curPos];
+    var elem = getCurrentElem(allElements);
 
     if (elem.streetvideo != null 
-            && elem.streetvideo != currentVideo) {
-        currentBegin = elem.streetvideo_begin;
-        currentEnd = elem.streetvideo_end;
+            && elem.streetvideo != currentElem.streetvideo) {
         playNewVideo(elem);
     }
-    var newSpeed = getSpeed();
-    if (newSpeed != currentSpeed) {
-        setSpeed(newSpeed);
+
+    if (typeof elem.streetvideo_begin != 'undefined') {
+        var newSpeed = getVideoSpeed(elem, elem.streetvideo_begin, elem.streetvideo_end, currentVideoLength, timerStreet);
+        if (newSpeed != currentSpeed) {
+            setSpeed(newSpeed);
+        }
     }
 
     if (elem != currentElem) {
         display_status(elem.name);
-        currentElem  = elem;
+        currentElem = elem;
     }
 }
 
 $.getJSON(DATA_JSON, function(data) {
     allElements = data.elements;
     setFullStoryTime(data.fullStoryTime);
-    var tempPos = ($.url().param('position'));
-    console.log("inpos: "+inputPosition);
-    if (tempPos != null) {
-        inputPosition = tempPos;
-    }
-    console.log("inpos: "+inputPosition);
     var player = $("#streetvidjo")[0];
     player.addEventListener('loadedmetadata', function() {
         console.log("Length: " + player.duration);
