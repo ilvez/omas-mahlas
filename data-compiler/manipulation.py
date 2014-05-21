@@ -20,7 +20,7 @@ CSV_TIME_FORMAT = '%d:%m:%Y-%H:%M'
 MIN_TIME_PER_SLIDE = 2
 MAX_TIME_PER_SLIDE = 6
 DEFAULT_TIME_PER_SLIDE = 4
-
+MAX_VIDEO_ONLY_TIME = 9
 MAP_VIDEO = 'MAP_VIDEO'
 STREET_VIDEO = 'STREET_VIDEO'
 
@@ -260,8 +260,8 @@ class StoryElement:
             self.time_dt = str(ts_to_str(self.time))
             self.name = name
             self.time_for_slide = mapvideo.end_ts - mapvideo.begin_ts
-            if self.time_for_slide > 15:
-                self.time_for_slide = 15
+            if self.time_for_slide > MAX_VIDEO_ONLY_TIME:
+                self.time_for_slide = MAX_VIDEO_ONLY_TIME
             self.mapvideo = mapvideo.relpath
             self.mapvideo_begin = mapvideo.begin_ts
             self.mapvideo_end = mapvideo.end_ts
