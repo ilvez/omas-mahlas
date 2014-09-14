@@ -25,6 +25,12 @@ MAP_VIDEO = 'MAP_VIDEO'
 STREET_VIDEO = 'STREET_VIDEO'
 
 
+class MetaData:
+    elements = []
+
+    def __init__(self, csv):
+        pass
+
 class StoryData:
     elements = []
     metadata = []
@@ -160,6 +166,9 @@ class StoryData:
         for name in file_list:
             videos.append(VideoFile(name, self.elements, type))
         return videos
+
+    def add_metadata(self, md):
+        self.metadata = md
 
 
 class VideoFile:
@@ -391,9 +400,12 @@ def ts_to_str(ts):
     return datetime.fromtimestamp(ts)
 
 
-def compile(file, debug, json_path, mapvid, streetvid):
+def compile(file, debug, json_path, mapvid, streetvid, md_csv):
     setup_logging(debug)
     story = StoryData(extract_csv(file), mapvid, streetvid)
+    md = MetaData(md_csv)
+    story.add_metadata(md)
+
     if json_path is None:
         logging.info('%s', story.to_json())
     else:

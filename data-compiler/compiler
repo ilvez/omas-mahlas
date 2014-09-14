@@ -21,10 +21,13 @@ parser.add_argument('-m', '--mapvid', required=True,
                     help='path to mapvideos or file containing filenames')
 parser.add_argument('-s', '--streetvid', required=True,
                     help='path to mapvideos or file containing filenames')
+parser.add_argument('-md', '--metadata', required=True,
+                    help='path to metadata table CSV')
 
 if len(sys.argv) == 1:
     parser.print_help()
     sys.exit(0)
 
 args = parser.parse_args()
-compile(args.path, args.debug, args.json, args.mapvid, args.streetvid)
+compile(args.path, args.debug, args.json, args.mapvid, args.streetvid,
+        args.metadata)
